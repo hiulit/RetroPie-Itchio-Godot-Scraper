@@ -6,8 +6,8 @@
 # A Retropie scraper for Godot games hosted on https://itch.io/.
 #
 # Author: hiulit
-# Repository: [REPO_URL] (e.g. https://github.com/hiulit/RetroPie-Shell-Script-Boilerplate)
-# License: [LICENSE] [LICENSE_URL] (e.g. MIT https://github.com/hiulit/RetroPie-Shell-Script-Boilerplate/blob/master/LICENSE)
+# Repository: https://github.com/hiulit/RetroPie-Itchio-Godot-Scraper
+# License: MIT https://github.com/hiulit/RetroPie-Itchio-Godot-Scraper/blob/master/LICENSE
 #
 # Requirements:
 # - RetroPie 4.x.x
@@ -466,12 +466,3 @@ function main() {
 
 
 main "$@"
-
-# function get_date() {
-#   local date
-#   date="$1"
-#   echo "$(date --date="$date" +"%Y%m%dT%H%M%S")"
-# }
-
-
-# get_date "15 February 2019"
