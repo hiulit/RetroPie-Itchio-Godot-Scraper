@@ -3,7 +3,7 @@
 # retropie-itchio-godot-scraper.sh
 #
 # RetroPie itch.io Godot scraper
-# A Retropie scraper for Godot games hosted on https://itch.io/.
+# A RetroPie scraper for Godot games hosted on https://itch.io/.
 #
 # Author: hiulit
 # Repository: https://github.com/hiulit/RetroPie-Itchio-Godot-Scraper
@@ -26,7 +26,7 @@ readonly SCRIPT_DIR="$(cd "$(dirname $0)" && pwd)"
 readonly SCRIPT_NAME="$(basename "$0")"
 readonly SCRIPT_FULL="$SCRIPT_DIR/$SCRIPT_NAME"
 readonly SCRIPT_TITLE="RetroPie itch.io Godot scraper"
-readonly SCRIPT_DESCRIPTION="A Retropie scraper for Godot games hosted on https://itch.io/."
+readonly SCRIPT_DESCRIPTION="A RetroPie scraper for Godot games hosted on https://itch.io/."
 
 readonly DEPENDENCIES=("ffmpeg" "jq")
 
