@@ -40,8 +40,8 @@ readonly GODOT_IMAGES_DIR="$GODOT_ROMS_DIR/images"
 readonly GODOT_GAMELIST_FILE="$GODOT_ROMS_DIR/gamelist.xml"
 readonly GODOT_VIDEOS_HASHES_FILE="$GODOT_VIDEOS_DIR/.godot_video_hashes.txt"
 readonly GODOT_IMAGES_HASHES_FILE="$GODOT_IMAGES_DIR/.godot_image_hashes.txt"
-readonly IMAGES_ATTRIBUTIONS_FILE="$GODOT_IMAGES_DIR/IMAGES_ATTRIBUTIONS.txt"
-readonly VIDEOS_ATTRIBUTIONS_FILE="$GODOT_VIDEOS_DIR/VIDEOS_ATTRIBUTIONS.txt"
+readonly IMAGES_ATTRIBUTIONS_FILE="$GODOT_IMAGES_DIR/0_IMAGES_ATTRIBUTIONS_0.txt"
+readonly VIDEOS_ATTRIBUTIONS_FILE="$GODOT_VIDEOS_DIR/0_VIDEOS_ATTRIBUTIONS_0.txt"
 
 readonly TMP_DIR="$SCRIPT_DIR/.tmp/"
 readonly LOG_DIR="$SCRIPT_DIR/logs"
@@ -111,9 +111,9 @@ function parse_game_title() {
   local game_title
   local parsed_game_title
   game_title="$1"
-  IFS=" |_|-" read -r -a words <<< "$game_title"
-  # Seaparate words by spaces, '_' and '-'.
-  parsed_game_title="$(IFS=" |_|-"; echo "${words[@]}")"
+  IFS=" |_|-|[|]|{|}" read -r -a words <<< "$game_title"
+  # Seaparate words by spaces and special characters.
+  parsed_game_title="$(IFS=" |_|-|[|]|{|}"; echo "${words[@]}")"
   # Separate camelCase words.
   parsed_game_title="$(echo "$parsed_game_title" | sed 's/\([A-Z]\)/ \1/g')"
   # Trim leading and trailing white spaces.
