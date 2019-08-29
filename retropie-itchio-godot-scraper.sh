@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-
 # retropie-itchio-godot-scraper.sh
-#
-# RetroPie itch.io Godot scraper
-# A RetroPie scraper for Godot games hosted on https://itch.io/.
+
+# RetroPie itch.io Godot scraper.
+# A tool for RetroPie to scrape Godot games hosted on https://itch.io/.
 #
 # Author: hiulit
 # Repository: https://github.com/hiulit/RetroPie-Itchio-Godot-Scraper
@@ -25,8 +24,10 @@ readonly SCRIPT_VERSION="1.0.0"
 readonly SCRIPT_DIR="$(cd "$(dirname $0)" && pwd)"
 readonly SCRIPT_NAME="$(basename "$0")"
 readonly SCRIPT_FULL="$SCRIPT_DIR/$SCRIPT_NAME"
-readonly SCRIPT_TITLE="RetroPie itch.io Godot scraper"
-readonly SCRIPT_DESCRIPTION="A RetroPie scraper for Godot games hosted on https://itch.io/."
+readonly SCRIPT_TITLE="RetroPie itch.io Godot Scraper"
+readonly SCRIPT_DESCRIPTION="A tool for RetroPie to scrape Godot games hosted on https://itch.io/."
+
+readonly SCRIPTMODULE_FILE="$SCRIPT_DIR/scriptmodules/supplementary/itchio-godot-scraper.sh"
 
 readonly DEPENDENCIES=("ffmpeg" "jq")
 
@@ -59,6 +60,7 @@ CURL_STATUS=""
 # External resources #########################################################
 
 source "$SCRIPT_DIR/utils/base.sh"
+source "$SCRIPT_DIR/utils/dialogs.sh"
 
 
 # Functions ##################################################################
@@ -176,11 +178,12 @@ function get_game_info() {
         video="$(_jq '.video')"
 
         GAME_PROPERTIES=(
-          "developer $author"
           "desc $description"
-          "id $id"
+          "developer $author"
           "genre $genre"
+          "id $id"
           "image $thumb"
+          "link $link"
           "name $title"
           "publisher $publisher"
           "rating $rating"
@@ -288,7 +291,7 @@ function add_game_info() {
     # Add attribute "id" to <newGame>
     xmlstarlet ed -L -s "/gameList/newGame" -t attr -n "id" -v "$id" "$GODOT_GAMELIST_FILE"
     # Add attribute "source" to <newGame>
-    xmlstarlet ed -L -s "/gameList/newGame" -t attr -n "source" -v "https://itchio-godot-scraper.now.sh" "$GODOT_GAMELIST_FILE"
+    xmlstarlet ed -L -s "/gameList/newGame" -t attr -n "api-source" -v "itchio-godot-scraper.now.sh" "$GODOT_GAMELIST_FILE"
     # Add subnodes to <newGame>
     for game_property in "${GAME_PROPERTIES[@]}"; do
       local key
@@ -350,7 +353,12 @@ function add_game_info() {
         else
           # We don't want to add the 'id'.
           if [[ "$key" != "id" ]]; then
-            xmlstarlet ed -L -s "/gameList/newGame" -t elem -n "$key" -v "$value" "$GODOT_GAMELIST_FILE"
+            if [[ "$key" == "link" ]]; then
+              # Add attribute "source" to <newGame>
+              xmlstarlet ed -L -s "/gameList/newGame" -t attr -n "game-source" -v "$value" "$GODOT_GAMELIST_FILE"
+            else
+              xmlstarlet ed -L -s "/gameList/newGame" -t elem -n "$key" -v "$value" "$GODOT_GAMELIST_FILE"
+            fi
           fi
         fi
       fi
@@ -360,7 +368,50 @@ function add_game_info() {
     log "'$title' scraped successfully!"
     log
   fi
+}
 
+
+function scrape_single() {
+  local input_game
+  local parsed_game_title
+
+  log "Scraping started ..."
+  log
+
+  input_game="$1"
+  # Get the parsed title without the extension.
+  parsed_game_title="$(parse_game_title "${input_game%.*}")"
+  get_game_info "$parsed_game_title"
+
+  log "Scraping done!"
+}
+
+
+function scrape_all() {
+  local all_games
+  local input_game
+  local parsed_game_title
+
+  log "Scraping started ..."
+  log
+
+  if [[ -n "$1" ]]; then
+    all_games=("$@")
+  else
+    all_games="$(get_all_games)"
+  fi
+
+  # Parse the array by delimiting commas.
+  IFS="," read -r -a all_games <<< "${all_games[@]}"
+  for game in "${all_games[@]}"; do
+    # Remove trailing and leadings white spaces because of the comma separated array.
+    input_game="$(echo "$game" | awk '{$1=$1};1')"
+    # Get the parsed title without the extension.
+    parsed_game_title="$(parse_game_title "${input_game%.*}")"
+    get_game_info "$parsed_game_title"
+  done
+
+  log "Scraping done!"
 }
 
 
@@ -389,40 +440,21 @@ function get_options() {
         check_argument "$1" "$2" || exit 1
         shift
 
-        local input_game
-        local parsed_game_title
-
-        log "Scraping started ..."
-        log
-
-        input_game="$1"
-        # Get the parsed title without the extension.
-        parsed_game_title="$(parse_game_title "${input_game%.*}")"
-        get_game_info "$parsed_game_title"
-
-        log "Scraping done!"
+        scrape_single "$1"
         ;;
 #H -a, --all              Scrape all games.
       -a|--all)
-        local all_games
-        local input_game
-        local parsed_game_title
-
-        log "Scraping started ..."
-        log
-
-        all_games="$(get_all_games)"
-        # Parse the array by delimiting commas.
-        IFS="," read -r -a all_games <<< "${all_games[@]}"
-        for game in "${all_games[@]}"; do
-          # Remove trailing and leadings white spaces because of the comma separated array.
-          input_game="$(echo "$game" | awk '{$1=$1};1')"
-          # Get the parsed title without the extension.
-          parsed_game_title="$(parse_game_title "${input_game%.*}")"
-          get_game_info "$parsed_game_title"
-        done
-
-        log "Scraping done!"
+        scrape_all
+        ;;
+#H -i, --install          Install scriptmodule.
+      -i|--install)
+        echo "INSTALL SCRIPTMODULE"
+        exit 0
+        ;;
+#H -g, --gui              Show GUI.
+      -g|--gui)
+        dialog_main
+        # exit 0
         ;;
 #H -v, --version          Show script version.
       -v|--version)
