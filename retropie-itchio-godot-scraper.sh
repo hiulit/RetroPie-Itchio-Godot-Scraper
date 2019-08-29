@@ -419,8 +419,8 @@ function scrape_single() {
   parsed_game_title="$(parse_game_title "${input_game%.*}")"
   get_game_info "$parsed_game_title"
 
-  escape_xml
-  validate_xml
+  escape_xml "$GODOT_GAMELIST_FILE"
+  validate_xml "$GODOT_GAMELIST_FILE"
 
   log "Scraping done!"
 }
@@ -450,8 +450,8 @@ function scrape_all() {
     get_game_info "$parsed_game_title"
   done
 
-  escape_xml
-  validate_xml
+  escape_xml "$GODOT_GAMELIST_FILE"
+  validate_xml "$GODOT_GAMELIST_FILE"
 
   log "Scraping done!"
 }
