@@ -1,6 +1,6 @@
 # RetroPie itch.io Godot Scraper
 
-A RetroPie scraper for Godot games hosted on https://itch.io/.
+A tool for RetroPie to scrape Godot games hosted on https://itch.io/.
 
 This scraper uses the also open-source [itch.io-godot-scraper](https://github.com/hiulit/itchio-godot-scraper) project, which scrapes all the Godot games hosted on  https://itch.io/ and creates an API that can be consumed from the following URL https://itchio-godot-scraper.now.sh/api.
 
