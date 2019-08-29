@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # retropie-itchio-godot-scraper.sh
 
-# RetroPie itch.io Godot scraper.
+# RetroPie itch.io Godot Scraper.
 # A tool for RetroPie to scrape Godot games hosted on https://itch.io/.
 #
 # Author: hiulit
@@ -18,7 +18,10 @@
 user="$SUDO_USER"
 [[ -z "$user" ]] && user="$(id -un)"
 
-home="$(eval echo ~$user)"
+# home="$(eval echo ~$user)"
+
+home="$(find /home -type d -name RetroPie -print -quit 2> /dev/null)"
+home="${home%/RetroPie}"
 
 readonly SCRIPT_VERSION="1.0.0"
 readonly SCRIPT_DIR="$(cd "$(dirname $0)" && pwd)"
@@ -32,9 +35,13 @@ readonly SCRIPTMODULE_FILE="$SCRIPT_DIR/scriptmodules/supplementary/itchio-godot
 readonly DEPENDENCIES=("ffmpeg" "jq")
 
 readonly RP_DIR="$home/RetroPie"
-readonly ROMS_DIR="$RP_DIR/roms"
+readonly RP_ROMS_DIR="$RP_DIR/roms"
+readonly RP_MENU_DIR="$RP_DIR/retropiemenu"
+readonly RP_CONFIGS_DIR="/opt/retropie/configs"
+readonly ES_GAMELISTS_DIR="$RP_CONFIGS_DIR/all/emulationstation/gamelists"
+readonly RP_MENU_GAMELIST="$ES_GAMELISTS_DIR/retropie/gamelist.xml"
 
-readonly GODOT_ROMS_DIR="$ROMS_DIR/godot-engine"
+readonly GODOT_ROMS_DIR="$RP_ROMS_DIR/godot-engine"
 readonly GODOT_VIDEOS_DIR="$GODOT_ROMS_DIR/videos"
 readonly GODOT_IMAGES_DIR="$GODOT_ROMS_DIR/images"
 
@@ -53,8 +60,19 @@ readonly LOG_FILE="$LOG_DIR/$(date +%F-%T).log"
 
 GAME_PROPERTIES=()
 
+RP_MENU_PROPERTIES=(
+  "path ./$SCRIPT_NAME"
+  "name $SCRIPT_TITLE"
+  "desc $SCRIPT_DESCRIPTION"
+)
+
 CURL_RESPONSE="$TMP_DIR/curl_response.txt"
 CURL_STATUS=""
+
+
+# Flags ######################################################################
+
+GUI_FLAG=0
 
 
 # External resources #########################################################
@@ -76,6 +94,24 @@ function get_hash() {
 
 function set_hash() {
   sed -i "s|^\(\"$1\"\s*=\s*\).*|\1\"$2\"|" "$3"
+}
+
+
+function escape_xml() {
+  if [[ -z "$1" ]]; then
+    echo "ERROR: '$FUNCNAME' needs an XML as an argument!" >&2
+    exit 1
+  fi
+  xmlstarlet esc "$1" > /dev/null
+}
+
+
+function validate_xml() {
+  if [[ -z "$1" ]]; then
+    echo "ERROR: '$FUNCNAME' needs an XML as an argument!" >&2
+    exit 1
+  fi
+  xmlstarlet val "$1" > /dev/null
 }
 
 
@@ -383,6 +419,9 @@ function scrape_single() {
   parsed_game_title="$(parse_game_title "${input_game%.*}")"
   get_game_info "$parsed_game_title"
 
+  escape_xml
+  validate_xml
+
   log "Scraping done!"
 }
 
@@ -411,7 +450,46 @@ function scrape_all() {
     get_game_info "$parsed_game_title"
   done
 
+  escape_xml
+  validate_xml
+
   log "Scraping done!"
+}
+
+
+function install_script_retropie_menu() {
+  cat > "$RP_MENU_DIR/$SCRIPT_NAME" << _EOF_
+#!/usr/bin/env bash
+# $SCRIPT_NAME
+
+"$SCRIPT_FULL" -g
+
+_EOF_
+
+  if ! xmlstarlet sel -t -v "/gameList/game[path='./$SCRIPT_NAME']" "$RP_MENU_GAMELIST" > /dev/null; then
+    # Crete <newGame>
+    xmlstarlet ed -L -s "/gameList" -t elem -n "newGame" -v "" "$RP_MENU_GAMELIST"
+    for node in "${RP_MENU_PROPERTIES[@]}"; do
+      local key
+      local value
+      key="$(echo $node | grep  -Eo "^[^ ]+")"
+      value="$(echo $node | grep -Po "(?<= ).*")"
+      if [[ -n "$value" ]]; then
+        # Add nodes from $RP_MENU_PROPERTIES to <newGame>
+        xmlstarlet ed -L -s "/gameList/newGame" -t elem -n "$key" -v "$value" "$RP_MENU_GAMELIST"
+      fi
+    done
+    # Rename <newGame> to <game>
+    xmlstarlet ed -L -r "/gameList/newGame" -v "game" "$RP_MENU_GAMELIST"
+  fi
+  echo "Script installed in EmulationStation's RetroPie menu successfully!"
+}
+
+
+function uninstall_script_retropie_menu() {
+    rm "$RP_MENU_DIR/$SCRIPT_NAME"
+    xmlstarlet ed -L -d "//gameList/game[path='./$SCRIPT_NAME']" "$RP_MENU_GAMELIST"
+    echo "Script uninstalled from EmulationStation's RetroPie menu successfully!"
 }
 
 
@@ -421,7 +499,7 @@ function get_options() {
     exit 0
   else
     case "$1" in
-#H -h, --help             Print help message and exit.
+#H -h,   --help             Print help message and exit.
       -h|--help)
         echo
         underline "$SCRIPT_TITLE"
@@ -435,28 +513,44 @@ function get_options() {
         echo
         exit 0
         ;;
-#H -s, --single [NAME]    Scrape a single game.
+#H -s,   --single [NAME]    Scrape a single game.
       -s|--single)
         check_argument "$1" "$2" || exit 1
         shift
 
         scrape_single "$1"
         ;;
-#H -a, --all              Scrape all games.
+#H -a,   --all              Scrape all games.
       -a|--all)
         scrape_all
         ;;
-#H -i, --install          Install scriptmodule.
-      -i|--install)
+#H -ism, --install-sm       Install scriptmodule.
+      -ism|--install-sm)
         echo "INSTALL SCRIPTMODULE"
         exit 0
         ;;
-#H -g, --gui              Show GUI.
+#H -usm, --uninstall-sm     Uninstall scriptmodule.
+      -usm|--uninstall-sm)
+        echo "UNINSTALL SCRIPTMODULE"
+        exit 0
+        ;;
+#H -irm, --install-rm       Install the script in EmulationStation's RetroPie menu.
+      -irm|--install-rm)
+        install_script_retropie_menu
+        # exit 0
+        ;;
+#H -urm, --uninstall-rm     Uninstall the script in EmulationStation's RetroPie menu.
+      -urm|--uninstall-rm)
+        uninstall_script_retropie_menu
+        # exit 0
+        ;;
+#H -g,   --gui              Start the GUI.
       -g|--gui)
+        GUI_FLAG=1
         dialog_main
         # exit 0
         ;;
-#H -v, --version          Show script version.
+#H -v,   --version          Show script version.
       -v|--version)
         echo "$SCRIPT_VERSION"
         exit 0
