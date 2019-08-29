@@ -256,12 +256,13 @@ function update_game_info() {
     key="$(echo $game_property | grep -Eo "^[^ ]+")"
     value="$(echo $game_property | grep -Po "(?<= ).*")"
     if [[ -n "$value" && "$value" != null ]]; then
+      # We don't want to do anything here...
+      if [[ "$key" == "id" || "$key" == "link" ]]; then
+        continue
+      fi
       # If the key doesn't exist, create it.
       if ! xmlstarlet sel -t -v "/gameList/game[@id='$id']/$key" "$GODOT_GAMELIST_FILE" > /dev/null; then
-        # We don't want to add the 'id'.
-        if [[ "$key" != "id" ]]; then
-          xmlstarlet ed -L -s "/gameList/game[@id='$id']" -t elem -n "$key" -v "$value" "$GODOT_GAMELIST_FILE"
-        fi
+        xmlstarlet ed -L -s "/gameList/game[@id='$id']" -t elem -n "$key" -v "$value" "$GODOT_GAMELIST_FILE"
       fi
       if [[ "$key" == "video" ]]; then
         local hash
