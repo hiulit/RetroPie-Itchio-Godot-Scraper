@@ -52,7 +52,6 @@ function dialog_main() {
   local options=()
   local menu_text
   local cmd
-  # local choices
   local choice
 
   options=(
@@ -87,7 +86,7 @@ function dialog_main() {
   elif [[ "$return_value" -eq "$DIALOG_CANCEL" ]]; then
     exit 0
   elif [[ "$return_value" -eq "$DIALOG_EXTRA" ]]; then
-    echo "Extra"
+    exit 0
   fi
 }
 
@@ -140,8 +139,6 @@ function dialog_choose_games() {
   elif [[ "$return_value" -eq "$DIALOG_CANCEL" ]]; then
     exit 0
   elif [[ "$return_value" -eq "$DIALOG_EXTRA" ]]; then
-    # echo "EXTRA"
     dialog_main
-    # dialog_choose_all_systems_or_systems
   fi
 }
