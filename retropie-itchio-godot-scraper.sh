@@ -47,10 +47,13 @@ readonly GODOT_VIDEOS_DIR="$GODOT_ROMS_DIR/videos"
 readonly GODOT_IMAGES_DIR="$GODOT_ROMS_DIR/images"
 
 readonly GODOT_GAMELIST_FILE="$GODOT_ROMS_DIR/gamelist.xml"
+
 readonly GODOT_VIDEOS_HASHES_FILE="$GODOT_VIDEOS_DIR/.godot_video_hashes.txt"
 readonly GODOT_IMAGES_HASHES_FILE="$GODOT_IMAGES_DIR/.godot_image_hashes.txt"
+
 readonly IMAGES_ATTRIBUTIONS_FILE="$GODOT_IMAGES_DIR/0_IMAGES_ATTRIBUTIONS_0.txt"
 readonly VIDEOS_ATTRIBUTIONS_FILE="$GODOT_VIDEOS_DIR/0_VIDEOS_ATTRIBUTIONS_0.txt"
+readonly GAMES_ATTRIBUTIONS_FILE="$GODOT_ROMS_DIR/0_GAMES_ATTRIBUTIONS_0.txt"
 
 readonly TMP_DIR="$SCRIPT_DIR/.tmp/"
 readonly LOG_DIR="$SCRIPT_DIR/logs"
@@ -232,6 +235,7 @@ function get_game_info() {
         # Uppercase the words to find a match.
         if [[ "${game_title^^}" == *"${parsed_game_title^^}"* || ${parsed_game_title^^} == *"${game_title^^}"* ]]; then
           log "HURRAY! Found a matching game! ----> '$title'."
+          log "Game source and attributions: '$link'."
           GAME_PROPERTIES+=("path ./$input_game")
           add_game_info
         else
@@ -330,6 +334,11 @@ function add_game_info() {
     xmlstarlet ed -L -s "/gameList/newGame" -t attr -n "id" -v "$id" "$GODOT_GAMELIST_FILE"
     # Add attribute "source" to <newGame>
     xmlstarlet ed -L -s "/gameList/newGame" -t attr -n "api-source" -v "itchio-godot-scraper.now.sh" "$GODOT_GAMELIST_FILE"
+    # Create attributions file
+    echo "$(underline "GAME: \"$title\"")" >> "$GAMES_ATTRIBUTIONS_FILE"
+    echo "FILE: \"$input_game\"" >> "$GAMES_ATTRIBUTIONS_FILE"
+    echo "ATTRIBUTIONS: \"$link\"" >> "$GAMES_ATTRIBUTIONS_FILE"
+    echo "" >> "$GAMES_ATTRIBUTIONS_FILE"
     # Add subnodes to <newGame>
     for game_property in "${GAME_PROPERTIES[@]}"; do
       local key
