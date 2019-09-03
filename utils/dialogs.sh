@@ -127,13 +127,10 @@ function dialog_main() {
       dialog_msgbox "Error!" "Choose an option."
     fi
   elif [[ "$return_value" -eq "$DIALOG_CANCEL" ]]; then
-    echo "lelel"
     exit 0
   elif [[ "$return_value" -eq "$DIALOG_EXTRA" ]]; then
-    echo "lolo"
     exit 0
   elif [[ "$return_value" -eq "$DIALOG_ESC" ]]; then
-    echo "lala"
     exit 0
   fi
 }

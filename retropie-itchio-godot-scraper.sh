@@ -583,72 +583,72 @@ function finish() {
 }
 
 
-function get_options() {
-  if [[ -z "$1" ]]; then
-    usage
-    exit 0
-  else
-    case "$1" in
-#H -h,   --help             Print help message and exit.
-      -h|--help)
-        echo
-        underline "$SCRIPT_TITLE"
-        echo "$SCRIPT_DESCRIPTION"
-        echo
-        echo "USAGE: $0 [OPTIONS]"
-        echo
-        echo "OPTIONS:"
-        echo
-        sed '/^#H /!d; s/^#H //' "$0"
-        echo
-        exit 0
-        ;;
-#H -s,   --single [NAME]    Scrape a single game.
-      -s|--single)
-        check_argument "$1" "$2" || exit 1
-        shift
+# function get_options() {
+#   if [[ -z "$1" ]]; then
+#     usage
+#     exit 0
+#   else
+#     case "$1" in
+# #H -h,   --help             Print help message and exit.
+#       -h|--help)
+#         echo
+#         underline "$SCRIPT_TITLE"
+#         echo "$SCRIPT_DESCRIPTION"
+#         echo
+#         echo "USAGE: $0 [OPTIONS]"
+#         echo
+#         echo "OPTIONS:"
+#         echo
+#         sed '/^#H /!d; s/^#H //' "$0"
+#         echo
+#         exit 0
+#         ;;
+# #H -s,   --single [NAME]    Scrape a single game.
+#       -s|--single)
+#         check_argument "$1" "$2" || exit 1
+#         shift
 
-        scrape_single "$1"
-        ;;
-#H -a,   --all              Scrape all games.
-      -a|--all)
-        scrape_all
-        ;;
-#H -ism, --install-sm       Install scriptmodule.
-      -ism|--install-sm)
-        install_scriptmodule
-        ;;
-#H -usm, --uninstall-sm     Uninstall scriptmodule.
-      -usm|--uninstall-sm)
-        uninstall_scriptmodule
-        ;;
-#H -irm, --install-rm       Install script in EmulationStation's RetroPie menu.
-      -irm|--install-rm)
-        install_script_retropie_menu
-        # exit 0
-        ;;
-#H -urm, --uninstall-rm     Uninstall script from EmulationStation's RetroPie menu.
-      -urm|--uninstall-rm)
-        uninstall_script_retropie_menu
-        # exit 0
-        ;;
-#H -g,   --gui              Start GUI.
-      -g|--gui)
-        GUI_FLAG=1
-        dialog_main
-        # exit 0
-        ;;
-#H -v,   --version          Show script version.
-      -v|--version)
-        echo "$SCRIPT_VERSION"
-        ;;
-      *)
-        echo "ERROR: Invalid option '$1'." >&2
-        exit 2
-        ;;
-    esac
-  fi
-}
+#         scrape_single "$1"
+#         ;;
+# #H -a,   --all              Scrape all games.
+#       -a|--all)
+#         scrape_all
+#         ;;
+# #H -ism, --install-sm       Install scriptmodule.
+#       -ism|--install-sm)
+#         install_scriptmodule
+#         ;;
+# #H -usm, --uninstall-sm     Uninstall scriptmodule.
+#       -usm|--uninstall-sm)
+#         uninstall_scriptmodule
+#         ;;
+# #H -irm, --install-rm       Install script in EmulationStation's RetroPie menu.
+#       -irm|--install-rm)
+#         install_script_retropie_menu
+#         # exit 0
+#         ;;
+# #H -urm, --uninstall-rm     Uninstall script from EmulationStation's RetroPie menu.
+#       -urm|--uninstall-rm)
+#         uninstall_script_retropie_menu
+#         # exit 0
+#         ;;
+# #H -g,   --gui              Start GUI.
+#       -g|--gui)
+#         GUI_FLAG=1
+#         dialog_main
+#         # exit 0
+#         ;;
+# #H -v,   --version          Show script version.
+#       -v|--version)
+#         echo "$SCRIPT_VERSION"
+#         ;;
+#       *)
+#         echo "ERROR: Invalid option '$1'." >&2
+#         exit 2
+#         ;;
+#     esac
+#   fi
+# }
 
 
 function main() {
@@ -676,6 +676,7 @@ function main() {
 
   trap finish EXIT
 
+  GUI_FLAG=1
   dialog_main
 
 }
