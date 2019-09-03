@@ -29,10 +29,11 @@ function sources_itchio-godot-scraper() {
 function install_itchio-godot-scraper() {
   md_ret_files=(
     "retropie-itchio-godot-scraper.sh"
+    "utils"
   )
 }
 
 
 function gui_itchio-godot-scraper() {
-  bash "$md_inst/retropie-itchio-godot-scraper.sh" --gui
+  bash "$md_inst/retropie-itchio-godot-scraper.sh"
 }
