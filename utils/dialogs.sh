@@ -3,7 +3,7 @@
 
 # Variables ############################################
 
-DIALOG_BACKTITLE="$SCRIPT_TITLE"
+DIALOG_BACKTITLE="$SCRIPT_TITLE (v$SCRIPT_VERSION)"
 readonly DIALOG_HEIGHT=20
 readonly DIALOG_WIDTH=60
 readonly DIALOG_OK=0
@@ -54,9 +54,34 @@ function dialog_main() {
   local cmd
   local choice
 
+  local retropie_menu_status
+  local retropie_menu_status_string
+  # Check if script is installed in EmulationStation's RetroPie menu.
+  if [[ -f "$RP_MENU_DIR/$SCRIPT_NAME" ]]; then
+    retropie_menu_status=1
+    retropie_menu_status_string="Uninstall script from"
+  else
+    retropie_menu_status=0
+    retropie_menu_status_string="Install script in"
+  fi
+
+  local scriptmodule_status
+  local scriptmodule_status_string
+  # Check if scriptmodule is installed.
+  if [[ -f "$RP_SETUP_DIR/scriptmodules/supplementary/$(basename "$SCRIPTMODULE_FILE")" ]]; then
+    scriptmodule_status=1
+    scriptmodule_status_string="Uninstall"
+  else
+    scriptmodule_status=0
+    scriptmodule_status_string="Install"
+  fi
+
   options=(
-    1 "Scrape selected games"
+    1 "Select games to scrape"
     2 "Scrape all games"
+    "-" "----------"
+    3 "$retropie_menu_status_string EmulationStation's RetroPie menu"
+    4 "$scriptmodule_status_string scriptmodule"
   )
 
   menu_text="Choose an option."
@@ -64,6 +89,7 @@ function dialog_main() {
   cmd=(dialog \
     --backtitle "$DIALOG_BACKTITLE" \
     --title "$SCRIPT_TITLE" \
+    --ok-label "OK" \
     --cancel-label "Exit" \
     --menu "$menu_text" 15 "$DIALOG_WIDTH" 15)
 
@@ -73,19 +99,41 @@ function dialog_main() {
   if [[ "$return_value" -eq "$DIALOG_OK" ]]; then
     if [[ -n "$choice" ]]; then
       case "$choice" in
+        "-")
+          dialog_main
+          ;;
         1)
           dialog_choose_games
           ;;
         2)
           scrape_all
           ;;
+        3)
+          if [[ "$retropie_menu_status" -eq 1 ]]; then
+            uninstall_script_retropie_menu
+          else
+            install_script_retropie_menu
+          fi
+          ;;
+        4)
+          if [[ "$scriptmodule_status" -eq 1 ]]; then
+            uninstall_scriptmodule
+          else
+            install_scriptmodule
+          fi
+          ;;
       esac
     else
       dialog_msgbox "Error!" "Choose an option."
     fi
   elif [[ "$return_value" -eq "$DIALOG_CANCEL" ]]; then
+    echo "lelel"
     exit 0
   elif [[ "$return_value" -eq "$DIALOG_EXTRA" ]]; then
+    echo "lolo"
+    exit 0
+  elif [[ "$return_value" -eq "$DIALOG_ESC" ]]; then
+    echo "lala"
     exit 0
   fi
 }
@@ -114,6 +162,7 @@ function dialog_choose_games() {
   cmd=(dialog \
     --backtitle "$DIALOG_BACKTITLE" \
     --title "$SCRIPT_TITLE" \
+    --ok-label "OK" \
     --cancel-label "Exit" \
     --extra-button \
     --extra-label "Back" \

@@ -35,6 +35,7 @@ readonly SCRIPTMODULE_FILE="$SCRIPT_DIR/scriptmodules/supplementary/itchio-godot
 readonly DEPENDENCIES=("ffmpeg" "jq")
 
 readonly RP_DIR="$home/RetroPie"
+readonly RP_SETUP_DIR="$home/RetroPie-Setup"
 readonly RP_ROMS_DIR="$RP_DIR/roms"
 readonly RP_MENU_DIR="$RP_DIR/retropiemenu"
 readonly RP_CONFIGS_DIR="/opt/retropie/configs"
@@ -424,6 +425,16 @@ function scrape_single() {
   validate_xml "$GODOT_GAMELIST_FILE"
 
   log "Scraping done!"
+
+  if [[ "$GUI_FLAG" -eq 1 ]]; then
+    local text
+    local dialog_height="9"
+
+    text="Scraping done!\n\n"
+    text+="Check the log file in '$LOG_DIR'."
+    dialog_msgbox "Info" "$text" "$dialog_height"
+    dialog_main
+  fi
 }
 
 
@@ -455,6 +466,16 @@ function scrape_all() {
   validate_xml "$GODOT_GAMELIST_FILE"
 
   log "Scraping done!"
+
+  if [[ "$GUI_FLAG" -eq 1 ]]; then
+    local text
+    local dialog_height="9"
+
+    text="Scraping done!\n\n"
+    text+="Check the log file in '$LOG_DIR'."
+    dialog_msgbox "Info" "$text" "$dialog_height"
+    dialog_main
+  fi
 }
 
 
@@ -483,14 +504,73 @@ _EOF_
     # Rename <newGame> to <game>
     xmlstarlet ed -L -r "/gameList/newGame" -v "game" "$RP_MENU_GAMELIST"
   fi
-  echo "Script installed in EmulationStation's RetroPie menu successfully!"
+  if [[ "$GUI_FLAG" -eq 1 ]]; then
+    dialog_msgbox "Success!" "Script installed in EmulationStation's RetroPie menu successfully!"
+  else
+    echo "Script installed in EmulationStation's RetroPie menu successfully!"
+  fi
 }
 
 
 function uninstall_script_retropie_menu() {
-    rm "$RP_MENU_DIR/$SCRIPT_NAME"
-    xmlstarlet ed -L -d "//gameList/game[path='./$SCRIPT_NAME']" "$RP_MENU_GAMELIST"
+  rm "$RP_MENU_DIR/$SCRIPT_NAME"
+  xmlstarlet ed -L -d "//gameList/game[path='./$SCRIPT_NAME']" "$RP_MENU_GAMELIST"
+  if [[ "$GUI_FLAG" -eq 1 ]]; then
+    dialog_msgbox "Success!" "Script uninstalled from EmulationStation's RetroPie menu successfully!"
+  else
     echo "Script uninstalled from EmulationStation's RetroPie menu successfully!"
+  fi
+}
+
+
+function install_scriptmodule() {
+  echo
+  echo "> Installing '$(basename "$SCRIPTMODULE_FILE")' scriptmodule ..."
+  cp "$SCRIPTMODULE_FILE" "$RP_SETUP_DIR/scriptmodules/supplementary"
+  local return_value="$?"
+  if [[ "$return_value" -eq 0 ]]; then
+    if [[ "$GUI_FLAG" -eq 1 ]]; then
+      dialog_msgbox "Success!" "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule installed in '$RP_SETUP_DIR/scriptmodules/supplementary' successfully!"
+      dialog_main
+    else
+      echo "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule installed in '$RP_SETUP_DIR/scriptmodules/supplementary' successfully!"
+    fi
+  else
+    if [[ "$GUI_FLAG" -eq 1 ]]; then
+      dialog_msgbox "Error!" "Couldn't install '$(basename "$SCRIPTMODULE_FILE")' scriptmodule."
+      dialog_main
+    else
+      echo "ERROR: Couldn't install '$(basename "$SCRIPTMODULE_FILE")' scriptmodule." >&2
+    fi
+  fi
+}
+
+
+function uninstall_scriptmodule() {
+  echo
+  echo "> Uninstalling '$(basename "$SCRIPTMODULE_FILE")' scriptmodule ..."
+  rm "$RP_SETUP_DIR/scriptmodules/supplementary/$(basename "$SCRIPTMODULE_FILE")"
+  local return_value="$?"
+  if [[ "$return_value" -eq 0 ]]; then
+    if [[ "$GUI_FLAG" -eq 1 ]]; then
+      dialog_msgbox "Success!" "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule uninstalled successfully!"
+      dialog_main
+    else
+      echo "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule uninstalled successfully!"
+    fi
+  else
+    if [[ "$GUI_FLAG" -eq 1 ]]; then
+      dialog_msgbox "Error!" "Couldn't uninstall '$(basename "$SCRIPTMODULE_FILE")' scriptmodule."
+      dialog_main
+    else
+      echo "ERROR: Couldn't uninstall '$(basename "$SCRIPTMODULE_FILE")' scriptmodule." >&2
+    fi
+  fi
+}
+
+
+function finish() {
+  rm -rf "$TMP_DIR"
 }
 
 
@@ -527,25 +607,23 @@ function get_options() {
         ;;
 #H -ism, --install-sm       Install scriptmodule.
       -ism|--install-sm)
-        echo "INSTALL SCRIPTMODULE"
-        exit 0
+        install_scriptmodule
         ;;
 #H -usm, --uninstall-sm     Uninstall scriptmodule.
       -usm|--uninstall-sm)
-        echo "UNINSTALL SCRIPTMODULE"
-        exit 0
+        uninstall_scriptmodule
         ;;
-#H -irm, --install-rm       Install the script in EmulationStation's RetroPie menu.
+#H -irm, --install-rm       Install script in EmulationStation's RetroPie menu.
       -irm|--install-rm)
         install_script_retropie_menu
         # exit 0
         ;;
-#H -urm, --uninstall-rm     Uninstall the script in EmulationStation's RetroPie menu.
+#H -urm, --uninstall-rm     Uninstall script from EmulationStation's RetroPie menu.
       -urm|--uninstall-rm)
         uninstall_script_retropie_menu
         # exit 0
         ;;
-#H -g,   --gui              Start the GUI.
+#H -g,   --gui              Start GUI.
       -g|--gui)
         GUI_FLAG=1
         dialog_main
@@ -554,7 +632,6 @@ function get_options() {
 #H -v,   --version          Show script version.
       -v|--version)
         echo "$SCRIPT_VERSION"
-        exit 0
         ;;
       *)
         echo "ERROR: Invalid option '$1'." >&2
@@ -586,9 +663,12 @@ function main() {
 
   create_gamelist_file
 
-  get_options "$@"
+  # get_options "$@"
 
-  rm -rf "$TMP_DIR"
+  trap finish EXIT
+
+  dialog_main
+
 }
 
 
