@@ -145,7 +145,7 @@ function get_all_games() {
   while IFS= read -r line; do
     # Add games ending with a comma to use for parsing them later on.
     all_games+=("$(basename "$line"),")
-  done < <(find "$GODOT_ROMS_DIR" -name '*.pck' -o -name '*.zip')
+  done < <(find "$GODOT_ROMS_DIR" -name '*.pck' -o -name '*.zip' | sort)
   echo "${all_games[@]}"
 }
 
