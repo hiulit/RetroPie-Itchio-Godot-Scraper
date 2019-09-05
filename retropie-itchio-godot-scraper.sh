@@ -60,6 +60,8 @@ readonly TMP_DIR="$SCRIPT_DIR/.tmp/"
 readonly LOG_DIR="$SCRIPT_DIR/logs"
 readonly LOG_FILE="$LOG_DIR/$(date +%F-%T).log"
 
+readonly MAIN_SCRIPT_FILE="retropie-itchio-godot-scraper.sh"
+
 
 # Variables ##################################################################
 
@@ -435,6 +437,7 @@ function scrape_single() {
   validate_xml "$GODOT_GAMELIST_FILE"
 
   log "Scraping done!"
+  log
 
   if [[ "$GUI_FLAG" -eq 1 ]]; then
     local text
@@ -476,6 +479,8 @@ function scrape_all() {
   validate_xml "$GODOT_GAMELIST_FILE"
 
   log "Scraping done!"
+  log
+
 
   if [[ "$GUI_FLAG" -eq 1 ]]; then
     local text
@@ -487,171 +492,6 @@ function scrape_all() {
     dialog_main
   fi
 }
-
-
-function install_script_retropie_menu() {
-  cat > "$RP_MENU_DIR/$SCRIPT_NAME" << _EOF_
-#!/usr/bin/env bash
-# $SCRIPT_NAME
-
-"$SCRIPT_FULL"
-
-_EOF_
-
-  if ! xmlstarlet sel -t -v "/gameList/game[path='./$SCRIPT_NAME']" "$RP_MENU_GAMELIST" > /dev/null; then
-    # Crete <newGame>
-    xmlstarlet ed -L -s "/gameList" -t elem -n "newGame" -v "" "$RP_MENU_GAMELIST"
-    for node in "${RP_MENU_PROPERTIES[@]}"; do
-      local key
-      local value
-      key="$(echo $node | grep  -Eo "^[^ ]+")"
-      value="$(echo $node | grep -Po "(?<= ).*")"
-      if [[ -n "$value" ]]; then
-        # Add nodes from $RP_MENU_PROPERTIES to <newGame>
-        xmlstarlet ed -L -s "/gameList/newGame" -t elem -n "$key" -v "$value" "$RP_MENU_GAMELIST"
-      fi
-    done
-    # Rename <newGame> to <game>
-    xmlstarlet ed -L -r "/gameList/newGame" -v "game" "$RP_MENU_GAMELIST"
-  fi
-  if [[ "$GUI_FLAG" -eq 1 ]]; then
-    dialog_msgbox "Success!" "Script installed in EmulationStation's RetroPie menu successfully!"
-    dialog_main
-  else
-    echo "Script installed in EmulationStation's RetroPie menu successfully!"
-  fi
-}
-
-
-function uninstall_script_retropie_menu() {
-  rm "$RP_MENU_DIR/$SCRIPT_NAME"
-  xmlstarlet ed -L -d "//gameList/game[path='./$SCRIPT_NAME']" "$RP_MENU_GAMELIST"
-  if [[ "$GUI_FLAG" -eq 1 ]]; then
-    dialog_msgbox "Success!" "Script uninstalled from EmulationStation's RetroPie menu successfully!"
-    dialog_main
-  else
-    echo "Script uninstalled from EmulationStation's RetroPie menu successfully!"
-  fi
-}
-
-
-function install_scriptmodule() {
-  echo
-  echo "> Installing '$(basename "$SCRIPTMODULE_FILE")' scriptmodule ..."
-  cp "$SCRIPTMODULE_FILE" "$SCRIPTMODULES_DIR"
-  local return_value="$?"
-  if [[ "$return_value" -eq 0 ]]; then
-    if [[ "$GUI_FLAG" -eq 1 ]]; then
-      dialog_msgbox "Success!" "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule installed in '$SCRIPTMODULES_DIR' successfully!"
-      dialog_main
-    else
-      echo "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule installed in '$SCRIPTMODULES_DIR' successfully!"
-    fi
-  else
-    if [[ "$GUI_FLAG" -eq 1 ]]; then
-      dialog_msgbox "Error!" "Couldn't install '$(basename "$SCRIPTMODULE_FILE")' scriptmodule."
-      dialog_main
-    else
-      echo "ERROR: Couldn't install '$(basename "$SCRIPTMODULE_FILE")' scriptmodule." >&2
-    fi
-  fi
-}
-
-
-function uninstall_scriptmodule() {
-  echo
-  echo "> Uninstalling '$(basename "$SCRIPTMODULE_FILE")' scriptmodule ..."
-  rm "$SCRIPTMODULES_DIR/$(basename "$SCRIPTMODULE_FILE")"
-  local return_value="$?"
-  if [[ "$return_value" -eq 0 ]]; then
-    if [[ "$GUI_FLAG" -eq 1 ]]; then
-      dialog_msgbox "Success!" "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule uninstalled successfully!"
-      dialog_main
-    else
-      echo "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule uninstalled successfully!"
-    fi
-  else
-    if [[ "$GUI_FLAG" -eq 1 ]]; then
-      dialog_msgbox "Error!" "Couldn't uninstall '$(basename "$SCRIPTMODULE_FILE")' scriptmodule."
-      dialog_main
-    else
-      echo "ERROR: Couldn't uninstall '$(basename "$SCRIPTMODULE_FILE")' scriptmodule." >&2
-    fi
-  fi
-}
-
-
-function finish() {
-  rm -rf "$TMP_DIR"
-}
-
-
-# function get_options() {
-#   if [[ -z "$1" ]]; then
-#     usage
-#     exit 0
-#   else
-#     case "$1" in
-# #H -h,   --help             Print help message and exit.
-#       -h|--help)
-#         echo
-#         underline "$SCRIPT_TITLE"
-#         echo "$SCRIPT_DESCRIPTION"
-#         echo
-#         echo "USAGE: $0 [OPTIONS]"
-#         echo
-#         echo "OPTIONS:"
-#         echo
-#         sed '/^#H /!d; s/^#H //' "$0"
-#         echo
-#         exit 0
-#         ;;
-# #H -s,   --single [NAME]    Scrape a single game.
-#       -s|--single)
-#         check_argument "$1" "$2" || exit 1
-#         shift
-
-#         scrape_single "$1"
-#         ;;
-# #H -a,   --all              Scrape all games.
-#       -a|--all)
-#         scrape_all
-#         ;;
-# #H -ism, --install-sm       Install scriptmodule.
-#       -ism|--install-sm)
-#         install_scriptmodule
-#         ;;
-# #H -usm, --uninstall-sm     Uninstall scriptmodule.
-#       -usm|--uninstall-sm)
-#         uninstall_scriptmodule
-#         ;;
-# #H -irm, --install-rm       Install script in EmulationStation's RetroPie menu.
-#       -irm|--install-rm)
-#         install_script_retropie_menu
-#         # exit 0
-#         ;;
-# #H -urm, --uninstall-rm     Uninstall script from EmulationStation's RetroPie menu.
-#       -urm|--uninstall-rm)
-#         uninstall_script_retropie_menu
-#         # exit 0
-#         ;;
-# #H -g,   --gui              Start GUI.
-#       -g|--gui)
-#         GUI_FLAG=1
-#         dialog_main
-#         # exit 0
-#         ;;
-# #H -v,   --version          Show script version.
-#       -v|--version)
-#         echo "$SCRIPT_VERSION"
-#         ;;
-#       *)
-#         echo "ERROR: Invalid option '$1'." >&2
-#         exit 2
-#         ;;
-#     esac
-#   fi
-# }
 
 
 function main() {
@@ -685,7 +525,3 @@ function main() {
 
 
 main "$@"
-
-# echo "SCRIPT_DIR: $SCRIPT_DIR"
-# echo "RP_MENU_DIR: $RP_MENU_DIR"
-# echo "SCRIPTMODULES_DIR: $SCRIPTMODULES_DIR"

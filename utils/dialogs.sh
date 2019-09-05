@@ -1,6 +1,18 @@
 #!/usr/bin/env bash
 # dialogs.sh
 
+# RetroPie itch.io Godot Scraper.
+# A tool for RetroPie to scrape Godot games hosted on https://itch.io/.
+#
+# Author: hiulit
+# Repository: https://github.com/hiulit/RetroPie-Itchio-Godot-Scraper
+# License: MIT https://github.com/hiulit/RetroPie-Itchio-Godot-Scraper/blob/master/LICENSE
+#
+# Requirements:
+# - RetroPie 4.x.x
+# - ffmpeg
+# - jq
+
 # Variables ############################################
 
 DIALOG_BACKTITLE="$SCRIPT_TITLE (v$SCRIPT_VERSION)"
@@ -48,7 +60,7 @@ function dialog_yesno() {
 }
 
 
-function dialog_main() {
+function dialog_setup() {
   local options=()
   local menu_text
   local cmd
@@ -57,7 +69,7 @@ function dialog_main() {
   local retropie_menu_status
   local retropie_menu_status_string
   # Check if script is installed in EmulationStation's RetroPie menu.
-  if [[ -f "$RP_MENU_DIR/$SCRIPT_NAME" ]]; then
+  if [[ -f "$RP_MENU_DIR/$MAIN_SCRIPT_FILE" ]]; then
     retropie_menu_status=1
     retropie_menu_status_string="Uninstall script from"
   else
@@ -77,11 +89,8 @@ function dialog_main() {
   fi
 
   options=(
-    1 "Select games to scrape"
-    2 "Scrape all games"
-    "-" "----------"
-    3 "$retropie_menu_status_string EmulationStation's RetroPie menu"
-    4 "$scriptmodule_status_string scriptmodule"
+    1 "$retropie_menu_status_string EmulationStation's RetroPie menu"
+    2 "$scriptmodule_status_string scriptmodule"
   )
 
   menu_text="Choose an option."
@@ -99,28 +108,65 @@ function dialog_main() {
   if [[ "$return_value" -eq "$DIALOG_OK" ]]; then
     if [[ -n "$choice" ]]; then
       case "$choice" in
-        "-")
-          dialog_main
-          ;;
         1)
-          dialog_choose_games
-          ;;
-        2)
-          scrape_all
-          ;;
-        3)
           if [[ "$retropie_menu_status" -eq 1 ]]; then
             uninstall_script_retropie_menu
           else
             install_script_retropie_menu
           fi
           ;;
-        4)
+        2)
           if [[ "$scriptmodule_status" -eq 1 ]]; then
             uninstall_scriptmodule
           else
             install_scriptmodule
           fi
+          ;;
+      esac
+    else
+      dialog_msgbox "Error!" "Choose an option."
+    fi
+  elif [[ "$return_value" -eq "$DIALOG_CANCEL" ]]; then
+    exit 0
+  elif [[ "$return_value" -eq "$DIALOG_EXTRA" ]]; then
+    exit 0
+  elif [[ "$return_value" -eq "$DIALOG_ESC" ]]; then
+    exit 0
+  fi
+}
+
+
+function dialog_main() {
+  local options=()
+  local menu_text
+  local cmd
+  local choice
+
+  options=(
+    1 "Select games to scrape"
+    2 "Scrape all games"
+  )
+
+  menu_text="Choose an option."
+
+  cmd=(dialog \
+    --backtitle "$DIALOG_BACKTITLE" \
+    --title "$SCRIPT_TITLE" \
+    --ok-label "OK" \
+    --cancel-label "Exit" \
+    --menu "$menu_text" 15 "$DIALOG_WIDTH" 15)
+
+  choice="$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)"
+  local return_value="$?"
+
+  if [[ "$return_value" -eq "$DIALOG_OK" ]]; then
+    if [[ -n "$choice" ]]; then
+      case "$choice" in
+        1)
+          dialog_choose_games
+          ;;
+        2)
+          scrape_all
           ;;
       esac
     else

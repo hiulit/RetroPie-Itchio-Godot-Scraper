@@ -1,6 +1,18 @@
 #!/usr/bin/env bash
 # base.sh
 
+# RetroPie itch.io Godot Scraper.
+# A tool for RetroPie to scrape Godot games hosted on https://itch.io/.
+#
+# Author: hiulit
+# Repository: https://github.com/hiulit/RetroPie-Itchio-Godot-Scraper
+# License: MIT https://github.com/hiulit/RetroPie-Itchio-Godot-Scraper/blob/master/LICENSE
+#
+# Requirements:
+# - RetroPie 4.x.x
+# - ffmpeg
+# - jq
+
 # Functions ##################################################################
 
 function is_retropie() {
@@ -84,4 +96,9 @@ function underline() {
 function log() {
   echo "$*" >> "$LOG_FILE"
   echo "$*"
+}
+
+
+function finish() {
+  rm -rf "$TMP_DIR"
 }

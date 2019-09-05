@@ -12,7 +12,7 @@
 rp_module_id="itchio-godot-scraper"
 rp_module_desc="A tool for RetroPie to scrape Godot games hosted on https://itch.io/."
 rp_module_help=""
-rp_module_section="exp"
+rp_module_section="opt"
 rp_module_flags=""
 rp_module_licence="MIT https://github.com/hiulit/RetroPie-Itchio-Godot-Scraper/blob/master/LICENSE"
 
