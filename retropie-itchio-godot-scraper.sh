@@ -28,7 +28,7 @@ readonly SCRIPT_DIR="$(cd "$(dirname $0)" && pwd)"
 readonly SCRIPT_NAME="$(basename "$0")"
 readonly SCRIPT_FULL="$SCRIPT_DIR/$SCRIPT_NAME"
 readonly SCRIPT_TITLE="RetroPie itch.io Godot Scraper"
-readonly SCRIPT_DESCRIPTION="A tool for RetroPie to scrape Godot games hosted on https://itch.io/."
+readonly SCRIPT_DESCRIPTION="Scrape Godot games hosted on https://itch.io/."
 
 readonly DEPENDENCIES=("ffmpeg" "jq")
 
