@@ -30,8 +30,6 @@ readonly SCRIPT_FULL="$SCRIPT_DIR/$SCRIPT_NAME"
 readonly SCRIPT_TITLE="RetroPie itch.io Godot Scraper"
 readonly SCRIPT_DESCRIPTION="A tool for RetroPie to scrape Godot games hosted on https://itch.io/."
 
-readonly SCRIPTMODULE_FILE="$SCRIPT_DIR/scriptmodules/supplementary/itchio-godot-scraper.sh"
-
 readonly DEPENDENCIES=("ffmpeg" "jq")
 
 readonly RP_DIR="$home/RetroPie"
@@ -41,6 +39,9 @@ readonly RP_MENU_DIR="$RP_DIR/retropiemenu"
 readonly RP_CONFIGS_DIR="/opt/retropie/configs"
 readonly ES_GAMELISTS_DIR="$RP_CONFIGS_DIR/all/emulationstation/gamelists"
 readonly RP_MENU_GAMELIST="$ES_GAMELISTS_DIR/retropie/gamelist.xml"
+
+readonly SCRIPTMODULES_DIR="$RP_SETUP_DIR/scriptmodules/supplementary"
+readonly SCRIPTMODULE_FILE="$SCRIPT_DIR/scriptmodules/supplementary/itchio-godot-scraper.sh"
 
 readonly GODOT_ROMS_DIR="$RP_ROMS_DIR/godot-engine"
 readonly GODOT_VIDEOS_DIR="$GODOT_ROMS_DIR/videos"
@@ -493,7 +494,7 @@ function install_script_retropie_menu() {
 #!/usr/bin/env bash
 # $SCRIPT_NAME
 
-"$SCRIPT_FULL" -g
+"$SCRIPT_FULL"
 
 _EOF_
 
@@ -515,6 +516,7 @@ _EOF_
   fi
   if [[ "$GUI_FLAG" -eq 1 ]]; then
     dialog_msgbox "Success!" "Script installed in EmulationStation's RetroPie menu successfully!"
+    dialog_main
   else
     echo "Script installed in EmulationStation's RetroPie menu successfully!"
   fi
@@ -526,6 +528,7 @@ function uninstall_script_retropie_menu() {
   xmlstarlet ed -L -d "//gameList/game[path='./$SCRIPT_NAME']" "$RP_MENU_GAMELIST"
   if [[ "$GUI_FLAG" -eq 1 ]]; then
     dialog_msgbox "Success!" "Script uninstalled from EmulationStation's RetroPie menu successfully!"
+    dialog_main
   else
     echo "Script uninstalled from EmulationStation's RetroPie menu successfully!"
   fi
@@ -535,14 +538,14 @@ function uninstall_script_retropie_menu() {
 function install_scriptmodule() {
   echo
   echo "> Installing '$(basename "$SCRIPTMODULE_FILE")' scriptmodule ..."
-  cp "$SCRIPTMODULE_FILE" "$RP_SETUP_DIR/scriptmodules/supplementary"
+  cp "$SCRIPTMODULE_FILE" "$SCRIPTMODULES_DIR"
   local return_value="$?"
   if [[ "$return_value" -eq 0 ]]; then
     if [[ "$GUI_FLAG" -eq 1 ]]; then
-      dialog_msgbox "Success!" "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule installed in '$RP_SETUP_DIR/scriptmodules/supplementary' successfully!"
+      dialog_msgbox "Success!" "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule installed in '$SCRIPTMODULES_DIR' successfully!"
       dialog_main
     else
-      echo "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule installed in '$RP_SETUP_DIR/scriptmodules/supplementary' successfully!"
+      echo "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule installed in '$SCRIPTMODULES_DIR' successfully!"
     fi
   else
     if [[ "$GUI_FLAG" -eq 1 ]]; then
@@ -558,7 +561,7 @@ function install_scriptmodule() {
 function uninstall_scriptmodule() {
   echo
   echo "> Uninstalling '$(basename "$SCRIPTMODULE_FILE")' scriptmodule ..."
-  rm "$RP_SETUP_DIR/scriptmodules/supplementary/$(basename "$SCRIPTMODULE_FILE")"
+  rm "$SCRIPTMODULES_DIR/$(basename "$SCRIPTMODULE_FILE")"
   local return_value="$?"
   if [[ "$return_value" -eq 0 ]]; then
     if [[ "$GUI_FLAG" -eq 1 ]]; then
@@ -678,8 +681,11 @@ function main() {
 
   GUI_FLAG=1
   dialog_main
-
 }
 
 
 main "$@"
+
+# echo "SCRIPT_DIR: $SCRIPT_DIR"
+# echo "RP_MENU_DIR: $RP_MENU_DIR"
+# echo "SCRIPTMODULES_DIR: $SCRIPTMODULES_DIR"
