@@ -156,9 +156,9 @@ function parse_game_title() {
   local game_title
   local parsed_game_title
   game_title="$1"
-  IFS=" |_|-|[|]|{|}" read -r -a words <<< "$game_title"
+  IFS=" |_|-|.|[|]|{|}" read -r -a words <<< "$game_title"
   # Seaparate words by spaces and special characters.
-  parsed_game_title="$(IFS=" |_|-|[|]|{|}"; echo "${words[@]}")"
+  parsed_game_title="$(IFS=" |_|-|.|[|]|{|}"; echo "${words[@]}")"
   # Separate camelCase words.
   parsed_game_title="$(echo "$parsed_game_title" | sed 's/\([A-Z]\)/ \1/g')"
   # Trim leading and trailing white spaces.
@@ -185,7 +185,7 @@ function get_game_info() {
   local video
 
   game_title="$1"
-  url="https://itchio-godot-scraper.now.sh/api/game/${game_title// /%20}" # Replace spaces with %20
+  url="https://itchio-godot-scraper.now.sh/api/game/title/${game_title// /%20}" # Replace spaces with %20
 
   log "$(underline "URL: '$url'")"
   log "> Getting info for '$input_game' ..."
