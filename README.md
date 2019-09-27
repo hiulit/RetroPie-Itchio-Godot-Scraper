@@ -31,7 +31,7 @@ You can install the script to be launched from:
 * EmulationStation's RetroPie menu
 * RetroPie Setup
 
-![Setup](/examples/setup.png)
+![Setup](/examples/setup.jpg)
 
 ## Usage
 
@@ -63,8 +63,8 @@ In both cases you'll end up with a simple dialog, where you can:
 * Select games to scrape.
 * Scrape all games.
 
-![Scrape games menu](/examples/scrape-games-menu.png)
-![Select games to scrape](/examples/select-games-to-scrape.png)
+![Scrape games menu](/examples/scrape-games-menu.jpg)
+![Select games to scrape](/examples/select-games-to-scrape.jpg)
 
 ## Troubleshooting
 
