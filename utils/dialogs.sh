@@ -217,7 +217,7 @@ function dialog_choose_games() {
     --cancel-label "Exit" \
     --extra-button \
     --extra-label "Back" \
-    --checklist "Select the game/s to scrape." \
+    --checklist "Select games to scrape." \
     15 "$DIALOG_WIDTH" 15)
 
   choices="$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)"
