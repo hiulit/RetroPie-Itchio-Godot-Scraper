@@ -56,7 +56,7 @@ readonly IMAGES_ATTRIBUTIONS_FILE="$GODOT_IMAGES_DIR/0_IMAGES_ATTRIBUTIONS_0.txt
 readonly VIDEOS_ATTRIBUTIONS_FILE="$GODOT_VIDEOS_DIR/0_VIDEOS_ATTRIBUTIONS_0.txt"
 readonly GAMES_ATTRIBUTIONS_FILE="$GODOT_ROMS_DIR/0_GAMES_ATTRIBUTIONS_0.txt"
 
-readonly TMP_DIR="$SCRIPT_DIR/.tmp/"
+readonly TMP_DIR="$SCRIPT_DIR/.tmp"
 readonly LOG_DIR="$SCRIPT_DIR/logs"
 readonly LOG_FILE="$LOG_DIR/$(date +%F-%T).log"
 
@@ -233,18 +233,23 @@ function get_game_info() {
           "video $video"
         )
 
-        parsed_game_title="$(parse_game_title "$title")"
+        log "HURRAY! Found a matching game! ----> '$title'."
+        log "Game source and attributions: '$link'."
+        GAME_PROPERTIES+=("path ./$input_game")
+        add_game_info
 
-        # Uppercase the words to find a match.
-        if [[ "${game_title^^}" == *"${parsed_game_title^^}"* || ${parsed_game_title^^} == *"${game_title^^}"* ]]; then
-          log "HURRAY! Found a matching game! ----> '$title'."
-          log "Game source and attributions: '$link'."
-          GAME_PROPERTIES+=("path ./$input_game")
-          add_game_info
-        else
-          log "ERROR: Couldn't find a match for '$input_game'!" >&2
-          log >&2
-        fi
+        # parsed_game_title="$(parse_game_title "$title")"
+
+        # # Uppercase the words to find a match.
+        # if [[ "${game_title^^}" == *"${parsed_game_title^^}"* || ${parsed_game_title^^} == *"${game_title^^}"* ]]; then
+        #   log "HURRAY! Found a matching game! ----> '$title'."
+        #   log "Game source and attributions: '$link'."
+        #   GAME_PROPERTIES+=("path ./$input_game")
+        #   add_game_info
+        # else
+        #   log "ERROR: Couldn't find a match for '$input_game'!" >&2
+        #   log >&2
+        # fi
       done
     fi
   else
@@ -491,6 +496,14 @@ function scrape_all() {
     dialog_msgbox "Info" "$text" "$dialog_height"
     dialog_main
   fi
+}
+
+function delete_scrapings() {
+  [[ -f "$GODOT_GAMELIST_FILE" ]] && rm "$GODOT_GAMELIST_FILE"
+  [[ -f "$GAMES_ATTRIBUTIONS_FILE" ]] && rm "$GAMES_ATTRIBUTIONS_FILE"
+
+  [[ -d "$GODOT_VIDEOS_DIR" ]] && rm -rf "$GODOT_VIDEOS_DIR"
+  [[ -d "$GODOT_IMAGES_DIR" ]] && rm -rf "$GODOT_IMAGES_DIR"
 }
 
 

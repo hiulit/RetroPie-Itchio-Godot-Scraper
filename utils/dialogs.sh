@@ -145,6 +145,8 @@ function dialog_main() {
   options=(
     1 "Select games to scrape"
     2 "Scrape all games"
+    "-" "----------"
+    3 "Delete scrapings"
   )
 
   menu_text="Choose an option."
@@ -162,11 +164,17 @@ function dialog_main() {
   if [[ "$return_value" -eq "$DIALOG_OK" ]]; then
     if [[ -n "$choice" ]]; then
       case "$choice" in
+        "-")
+          : # Do nothing
+          ;;
         1)
           dialog_choose_games
           ;;
         2)
           scrape_all
+          ;;
+        3)
+          delete_scrapings
           ;;
       esac
     else
