@@ -70,7 +70,7 @@ In both cases you'll end up with a simple dialog, where you can:
 
 ### The scraper can't find a game
 
-Most likely it's because the developer didn't put a *proper\** name to the game build.
+Most likely it's because the developer didn't *properly\** named the game build.
 
 See [itchio-godot-scraper](https://github.com/hiulit/itchio-godot-scraper) project (which is the API where this scraper takes the data from) so you can better understand how the scraper works and maybe tell the developer to rename the game so it's scrapable by this script 😉.
 
