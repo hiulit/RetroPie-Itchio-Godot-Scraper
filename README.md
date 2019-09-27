@@ -69,7 +69,7 @@ In both cases you'll end up with a simple dialog, where you can:
 If you don't want to install the script, you can just run it from the downloaded folder.
 
 ```
-cd RetroPie-Itchio-Godot-Scraper/
+cd /home/pi/RetroPie-Itchio-Godot-Scraper/
 ./retropie-itchio-godot-scraper.sh
 ```
 
