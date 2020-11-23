@@ -77,9 +77,9 @@ cd /home/pi/RetroPie-Itchio-Godot-Scraper/
 
 ### The scraper can't find a game
 
-Most likely it's because the developer didn't *properly\** named the game build.
+Most likely it's because the developer didn't *properly\** name the game build, but maybe it's because the scrapper does a bad job at finding the games.
 
-See [itchio-godot-scraper](https://github.com/hiulit/itchio-godot-scraper) project (which is the API where this scraper takes the data from) so you can better understand how the scraper works and maybe tell the developer to rename the game so it's scrapable by this script 😉.
+See the [itchio-godot-scraper](https://github.com/hiulit/itchio-godot-scraper) project (which is the API where this scraper takes the data from) to better understand how the scraper works and maybe tell the developer to rename the game so it's scrapable by this script. Or even better, contribute to make it better 😉.
 
 *\* It's actually not their fault, but the scraper needs a game to be named in some kind of convention to be able to scrape it.*
 
