@@ -375,18 +375,18 @@ function add_game_info() {
     update_game_info
   else
     log "> Creating a new <game> node in '$GODOT_GAMELIST_FILE' ..."
-    # Create a new <system> called "newGame"
+    # Create a new <system> called "newGame".
     xmlstarlet ed -L -s "/gameList" -t elem -n "newGame" -v "" "$GODOT_GAMELIST_FILE"
-    # Add attribute "id" to <newGame>
-    xmlstarlet ed -L -s "/gameList/newGame" -t attr -n "id" -v "$id" "$GODOT_GAMELIST_FILE"
-    # Add attribute "source" to <newGame>
-    xmlstarlet ed -L -s "/gameList/newGame" -t attr -n "api-source" -v "itchio-godot-scraper.now.sh" "$GODOT_GAMELIST_FILE"
-    # Create attributions file
+    # Add attribute "id" to <newGame>.
+    # xmlstarlet ed -L -s "/gameList/newGame" -t attr -n "id" -v "$id" "$GODOT_GAMELIST_FILE"
+    # Add attribute "source" to <newGame>.
+    # xmlstarlet ed -L -s "/gameList/newGame" -t attr -n "api-source" -v "itchio-godot-scraper.now.sh" "$GODOT_GAMELIST_FILE"
+    # Create the attributions file.
     echo "$(underline "GAME: \"$title\"")" >> "$GAMES_ATTRIBUTIONS_FILE"
     echo "FILE: \"$input_game\"" >> "$GAMES_ATTRIBUTIONS_FILE"
     echo "ATTRIBUTIONS: \"$link\"" >> "$GAMES_ATTRIBUTIONS_FILE"
     echo "" >> "$GAMES_ATTRIBUTIONS_FILE"
-    # Add subnodes to <newGame>
+    # Add subnodes to <newGame>.
     for game_property in "${GAME_PROPERTIES[@]}"; do
       local key
       local value
@@ -403,7 +403,7 @@ function add_game_info() {
           fi
           if [[ "$value" != "$hash" ]]; then
             set_hash "$title" "$value" "$GODOT_VIDEO_HASHES_FILE"
-            # Create a new attribution
+            # Create a new video attribution.
             echo "$(underline "GAME: \"$title\" (\"$input_game\")")" >> "$VIDEO_ATTRIBUTIONS_FILE"
             echo "FILE: \"$title.mp4\"" >> "$VIDEO_ATTRIBUTIONS_FILE"
             echo "ATTRIBUTIONS: \"$link\"" >> "$VIDEO_ATTRIBUTIONS_FILE"
@@ -429,7 +429,7 @@ function add_game_info() {
           fi
           if [[ "$value" != "$hash" ]]; then
             set_hash "$title" "$value" "$GODOT_IMAGE_HASHES_FILE"
-            # Create a new attribution
+            # Create a new image attribution.
             echo "$(underline "GAME: \"$title\" (\"$input_game\")")" >> "$IMAGE_ATTRIBUTIONS_FILE"
             echo "FILE: \"$title.jpg\"" >> "$IMAGE_ATTRIBUTIONS_FILE"
             echo "ATTRIBUTIONS: \"$link\"" >> "$IMAGE_ATTRIBUTIONS_FILE"
@@ -448,8 +448,9 @@ function add_game_info() {
           # We don't want to add the 'id'.
           if [[ "$key" != "id" ]]; then
             if [[ "$key" == "link" ]]; then
-              # Add attribute "source" to <newGame>
-              xmlstarlet ed -L -s "/gameList/newGame" -t attr -n "game-source" -v "$value" "$GODOT_GAMELIST_FILE"
+              # Add attribute "source" to <newGame>.
+              # xmlstarlet ed -L -s "/gameList/newGame" -t attr -n "game-source" -v "$value" "$GODOT_GAMELIST_FILE"
+              :
             else
               xmlstarlet ed -L -s "/gameList/newGame" -t elem -n "$key" -v "$value" "$GODOT_GAMELIST_FILE"
             fi
@@ -457,7 +458,7 @@ function add_game_info() {
         fi
       fi
     done
-    # Rename <newGame> to <game>
+    # Rename <newGame> to <game>.
     xmlstarlet ed -L -r "/gameList/newGame" -v "game" "$GODOT_GAMELIST_FILE"
     log "'$title' scraped successfully!"
     log
