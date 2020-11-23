@@ -199,7 +199,7 @@ function parse_game_title() {
   # Seaparate words by spaces and special characters.
   parsed_game_title="$(IFS=" |_|-|.|[|]|{|}"; echo "${words[@]}")"
   # Separate camelCase words.
-  parsed_game_title="$(echo "$parsed_game_title" | sed 's/\([A-Z]\)/ \1/g')"
+  parsed_game_title="$(echo "$parsed_game_title" | sed -Ee 's/([a-z])([A-Z])/\1\ \2/g')"
   # Trim leading and trailing white spaces.
   parsed_game_title="$(echo "$parsed_game_title" | awk '{$1=$1};1')"
   echo "$parsed_game_title"
