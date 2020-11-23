@@ -122,6 +122,36 @@ function validate_xml() {
 }
 
 
+function create_videos_dir() {
+  mkdir -p "$GODOT_VIDEOS_DIR" && chown -R "$user":"$user" "$GODOT_VIDEOS_DIR"
+}
+
+
+function create_images_dir() {
+  mkdir -p "$GODOT_IMAGES_DIR" && chown -R "$user":"$user" "$GODOT_IMAGES_DIR"
+}
+
+
+function create_attribution_files() {
+  if [[ ! -f "$VIDEO_ATTRIBUTIONS_FILE" ]]; then
+    touch "$VIDEO_ATTRIBUTIONS_FILE" && chown -R "$user":"$user" "$VIDEO_ATTRIBUTIONS_FILE"
+  fi
+  if [[ ! -f "$IMAGE_ATTRIBUTIONS_FILE" ]]; then
+    touch "$IMAGE_ATTRIBUTIONS_FILE" && chown -R "$user":"$user" "$IMAGE_ATTRIBUTIONS_FILE"
+  fi
+}
+
+
+function create_hash_files() {
+  if [[ ! -f "$GODOT_VIDEO_HASHES_FILE" ]]; then
+    touch "$GODOT_VIDEO_HASHES_FILE" && chown -R "$user":"$user" "$GODOT_VIDEO_HASHES_FILE"
+  fi
+  if [[ ! -f "$GODOT_IMAGE_HASHES_FILE" ]]; then
+    touch "$GODOT_IMAGE_HASHES_FILE" && chown -R "$user":"$user" "$GODOT_IMAGE_HASHES_FILE"
+  fi
+}
+
+
 function create_gamelist_file() {
   if [[ ! -f "$GODOT_GAMELIST_FILE" ]]; then
     touch "$GODOT_GAMELIST_FILE" && chown -R "$user":"$user" "$GODOT_GAMELIST_FILE"
@@ -131,6 +161,15 @@ function create_gamelist_file() {
 </gameList>
 _EOF_
   fi
+}
+
+
+function create_scraping_files_and_folders() {
+  create_videos_dir
+  create_images_dir
+  create_gamelist_file
+  create_attribution_files
+  create_hash_files
 }
 
 
@@ -430,6 +469,8 @@ function scrape_single() {
   local input_game
   local parsed_game_title
 
+  create_scraping_files_and_folders
+
   log "Scraping started ..."
   log
 
@@ -460,6 +501,8 @@ function scrape_all() {
   local all_games
   local input_game
   local parsed_game_title
+
+  create_scraping_files_and_folders
 
   log "Scraping started ..."
   log
@@ -516,18 +559,9 @@ function main() {
   mkdir -p "$TMP_DIR" && chown -R "$user":"$user" "$TMP_DIR"
   mkdir -p "$LOG_DIR" && chown -R "$user":"$user" "$LOG_DIR"
 
-  mkdir -p "$GODOT_VIDEOS_DIR" && chown -R "$user":"$user" "$GODOT_VIDEOS_DIR"
-  touch "$GODOT_VIDEO_HASHES_FILE" && chown -R "$user":"$user" "$GODOT_VIDEO_HASHES_FILE"
-  touch "$VIDEO_ATTRIBUTIONS_FILE" && chown -R "$user":"$user" "$VIDEO_ATTRIBUTIONS_FILE"
-
-  mkdir -p "$GODOT_IMAGES_DIR" && chown -R "$user":"$user" "$GODOT_IMAGES_DIR"
-  touch "$GODOT_IMAGE_HASHES_FILE" && chown -R "$user":"$user" "$GODOT_IMAGE_HASHES_FILE"
-  touch "$IMAGE_ATTRIBUTIONS_FILE" && chown -R "$user":"$user" "$IMAGE_ATTRIBUTIONS_FILE"
-
   find "$LOG_DIR" -type f | sort | head -n -9 | xargs -d '\n' --no-run-if-empty rm
 
-  create_video
-  create_gamelist_file
+  create_scraping_files_and_folders
 
   trap finish EXIT
 
