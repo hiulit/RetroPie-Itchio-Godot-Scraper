@@ -49,12 +49,12 @@ readonly GODOT_IMAGES_DIR="$GODOT_ROMS_DIR/images"
 
 readonly GODOT_GAMELIST_FILE="$GODOT_ROMS_DIR/gamelist.xml"
 
-readonly GODOT_VIDEOS_HASHES_FILE="$GODOT_VIDEOS_DIR/.godot_video_hashes.txt"
-readonly GODOT_IMAGES_HASHES_FILE="$GODOT_IMAGES_DIR/.godot_image_hashes.txt"
+readonly GODOT_VIDEO_HASHES_FILE="$GODOT_VIDEOS_DIR/.godot_video_hashes.txt"
+readonly GODOT_IMAGE_HASHES_FILE="$GODOT_IMAGES_DIR/.godot_image_hashes.txt"
 
-readonly IMAGES_ATTRIBUTIONS_FILE="$GODOT_IMAGES_DIR/0_IMAGES_ATTRIBUTIONS_0.txt"
-readonly VIDEOS_ATTRIBUTIONS_FILE="$GODOT_VIDEOS_DIR/0_VIDEOS_ATTRIBUTIONS_0.txt"
-readonly GAMES_ATTRIBUTIONS_FILE="$GODOT_ROMS_DIR/0_GAMES_ATTRIBUTIONS_0.txt"
+readonly IMAGE_ATTRIBUTIONS_FILE="$GODOT_IMAGES_DIR/000_IMAGE_ATTRIBUTIONS_000.txt"
+readonly VIDEO_ATTRIBUTIONS_FILE="$GODOT_VIDEOS_DIR/000_VIDEO_ATTRIBUTIONS_000.txt"
+readonly GAMES_ATTRIBUTIONS_FILE="$GODOT_ROMS_DIR/000_GAME_ATTRIBUTIONS_000.txt"
 
 readonly TMP_DIR="$SCRIPT_DIR/.tmp"
 readonly LOG_DIR="$SCRIPT_DIR/logs"
@@ -279,14 +279,14 @@ function update_game_info() {
       fi
       if [[ "$key" == "video" ]]; then
         local hash
-        hash="$(get_hash "$title" "$GODOT_VIDEOS_HASHES_FILE")"
+        hash="$(get_hash "$title" "$GODOT_VIDEO_HASHES_FILE")"
         # If no matching hash in hashes file...
         if [[ -z "$hash" ]]; then
           # ... create a new empty hash.
-          echo "\"$title\" = \"\"" >> "$GODOT_VIDEOS_HASHES_FILE"
+          echo "\"$title\" = \"\"" >> "$GODOT_VIDEO_HASHES_FILE"
         fi
         if [[ "$value" != "$hash" ]]; then
-          set_hash "$title" "$value" "$GODOT_VIDEOS_HASHES_FILE"
+          set_hash "$title" "$value" "$GODOT_VIDEO_HASHES_FILE"
           log "> Getting the video ..."
           CURL_STATUS="$(curl -sS -w %{http_code} "$value" -o "$GODOT_VIDEOS_DIR/$title.gif")"
           if [[ "$CURL_STATUS" -eq 200 ]]; then
@@ -298,14 +298,14 @@ function update_game_info() {
         fi
       elif [[ "$key" == "image" ]]; then
         local hash
-        hash="$(get_hash "$title" "$GODOT_IMAGES_HASHES_FILE")"
+        hash="$(get_hash "$title" "$GODOT_IMAGE_HASHES_FILE")"
         # If no matching hash in hashes file...
         if [[ -z "$hash" ]]; then
           # ... create a new empty hash.
-          echo "\"$title\" = \"\"" >> "$GODOT_IMAGES_HASHES_FILE"
+          echo "\"$title\" = \"\"" >> "$GODOT_IMAGE_HASHES_FILE"
         fi
         if [[ "$value" != "$hash" ]]; then
-          set_hash "$title" "$value" "$GODOT_IMAGES_HASHES_FILE"
+          set_hash "$title" "$value" "$GODOT_IMAGE_HASHES_FILE"
           log "> Getting the image ..."
           CURL_STATUS="$(curl -sS -w %{http_code} "$value" -o "$GODOT_IMAGES_DIR/$title.jpg")"
           if [[ "$CURL_STATUS" -eq 200 ]]; then
@@ -356,19 +356,19 @@ function add_game_info() {
       if [[ -n "$value" && "$value" != null ]]; then
         if [[ "$key" == "video" ]]; then
           local hash
-          hash="$(get_hash "$title" "$GODOT_VIDEOS_HASHES_FILE")"
+          hash="$(get_hash "$title" "$GODOT_VIDEO_HASHES_FILE")"
           # If no matching hash in hashes file...
           if [[ -z "$hash" ]]; then
             # ... create a new empty hash.
-            echo "\"$title\" = \"\"" >> "$GODOT_VIDEOS_HASHES_FILE"
+            echo "\"$title\" = \"\"" >> "$GODOT_VIDEO_HASHES_FILE"
           fi
           if [[ "$value" != "$hash" ]]; then
-            set_hash "$title" "$value" "$GODOT_VIDEOS_HASHES_FILE"
+            set_hash "$title" "$value" "$GODOT_VIDEO_HASHES_FILE"
             # Create a new attribution
-            echo "$(underline "GAME: \"$title\" (\"$input_game\")")" >> "$VIDEOS_ATTRIBUTIONS_FILE"
-            echo "FILE: \"$title.mp4\"" >> "$VIDEOS_ATTRIBUTIONS_FILE"
-            echo "ATTRIBUTIONS: \"$link\"" >> "$VIDEOS_ATTRIBUTIONS_FILE"
-            echo "" >> "$VIDEOS_ATTRIBUTIONS_FILE"
+            echo "$(underline "GAME: \"$title\" (\"$input_game\")")" >> "$VIDEO_ATTRIBUTIONS_FILE"
+            echo "FILE: \"$title.mp4\"" >> "$VIDEO_ATTRIBUTIONS_FILE"
+            echo "ATTRIBUTIONS: \"$link\"" >> "$VIDEO_ATTRIBUTIONS_FILE"
+            echo "" >> "$VIDEO_ATTRIBUTIONS_FILE"
             log "> Getting the video ..."
             CURL_STATUS="$(curl -sS -w %{http_code} "$value" -o "$GODOT_VIDEOS_DIR/$title.gif")"
             if [[ "$CURL_STATUS" -eq 200 ]]; then
@@ -382,19 +382,19 @@ function add_game_info() {
           fi
         elif [[ "$key" == "image" ]]; then
           local hash
-          hash="$(get_hash "$title" "$GODOT_IMAGES_HASHES_FILE")"
+          hash="$(get_hash "$title" "$GODOT_IMAGE_HASHES_FILE")"
           # If no matching hash in hashes file...
           if [[ -z "$hash" ]]; then
             # ... create a new empty hash.
-            echo "\"$title\" = \"\"" >> "$GODOT_IMAGES_HASHES_FILE"
+            echo "\"$title\" = \"\"" >> "$GODOT_IMAGE_HASHES_FILE"
           fi
           if [[ "$value" != "$hash" ]]; then
-            set_hash "$title" "$value" "$GODOT_IMAGES_HASHES_FILE"
+            set_hash "$title" "$value" "$GODOT_IMAGE_HASHES_FILE"
             # Create a new attribution
-            echo "$(underline "GAME: \"$title\" (\"$input_game\")")" >> "$IMAGES_ATTRIBUTIONS_FILE"
-            echo "FILE: \"$title.jpg\"" >> "$IMAGES_ATTRIBUTIONS_FILE"
-            echo "ATTRIBUTIONS: \"$link\"" >> "$IMAGES_ATTRIBUTIONS_FILE"
-            echo "" >> "$IMAGES_ATTRIBUTIONS_FILE"
+            echo "$(underline "GAME: \"$title\" (\"$input_game\")")" >> "$IMAGE_ATTRIBUTIONS_FILE"
+            echo "FILE: \"$title.jpg\"" >> "$IMAGE_ATTRIBUTIONS_FILE"
+            echo "ATTRIBUTIONS: \"$link\"" >> "$IMAGE_ATTRIBUTIONS_FILE"
+            echo "" >> "$IMAGE_ATTRIBUTIONS_FILE"
             log "> Getting the image ..."
             CURL_STATUS="$(curl -sS -w %{http_code} "$value" -o "$GODOT_IMAGES_DIR/$title.jpg")"
             if [[ "$CURL_STATUS" -eq 200 ]]; then
@@ -517,18 +517,17 @@ function main() {
   mkdir -p "$LOG_DIR" && chown -R "$user":"$user" "$LOG_DIR"
 
   mkdir -p "$GODOT_VIDEOS_DIR" && chown -R "$user":"$user" "$GODOT_VIDEOS_DIR"
-  touch "$GODOT_VIDEOS_HASHES_FILE" && chown -R "$user":"$user" "$GODOT_VIDEOS_HASHES_FILE"
-  touch "$VIDEOS_ATTRIBUTIONS_FILE" && chown -R "$user":"$user" "$VIDEOS_ATTRIBUTIONS_FILE"
+  touch "$GODOT_VIDEO_HASHES_FILE" && chown -R "$user":"$user" "$GODOT_VIDEO_HASHES_FILE"
+  touch "$VIDEO_ATTRIBUTIONS_FILE" && chown -R "$user":"$user" "$VIDEO_ATTRIBUTIONS_FILE"
 
   mkdir -p "$GODOT_IMAGES_DIR" && chown -R "$user":"$user" "$GODOT_IMAGES_DIR"
-  touch "$GODOT_IMAGES_HASHES_FILE" && chown -R "$user":"$user" "$GODOT_IMAGES_HASHES_FILE"
-  touch "$IMAGES_ATTRIBUTIONS_FILE" && chown -R "$user":"$user" "$IMAGES_ATTRIBUTIONS_FILE"
+  touch "$GODOT_IMAGE_HASHES_FILE" && chown -R "$user":"$user" "$GODOT_IMAGE_HASHES_FILE"
+  touch "$IMAGE_ATTRIBUTIONS_FILE" && chown -R "$user":"$user" "$IMAGE_ATTRIBUTIONS_FILE"
 
   find "$LOG_DIR" -type f | sort | head -n -9 | xargs -d '\n' --no-run-if-empty rm
 
+  create_video
   create_gamelist_file
-
-  # get_options "$@"
 
   trap finish EXIT
 
