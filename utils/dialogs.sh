@@ -175,6 +175,14 @@ function dialog_main() {
           ;;
         3)
           delete_scrapings
+
+          if [[ "$return_value" -eq 0 ]]; then
+            dialog_msgbox "Info" "All scraping were deleted successfully!"
+          else
+            dialog_msgbox "Error!" "Something when wrong when deleting the scraping."
+          fi
+
+          dialog_main
           ;;
       esac
     else
