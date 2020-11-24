@@ -557,6 +557,8 @@ function main() {
     exit 1
   fi
 
+  check_dependencies
+
   mkdir -p "$TMP_DIR" && chown -R "$user":"$user" "$TMP_DIR"
   mkdir -p "$LOG_DIR" && chown -R "$user":"$user" "$LOG_DIR"
 
