@@ -123,38 +123,38 @@ function validate_xml() {
 
 
 function create_videos_dir() {
-  mkdir -p "$GODOT_VIDEOS_DIR" && chown -R "$user":"$user" "$GODOT_VIDEOS_DIR"
+  mkdir -p "$GODOT_VIDEOS_DIR"
 }
 
 
 function create_images_dir() {
-  mkdir -p "$GODOT_IMAGES_DIR" && chown -R "$user":"$user" "$GODOT_IMAGES_DIR"
+  mkdir -p "$GODOT_IMAGES_DIR"
 }
 
 
 function create_attribution_files() {
   if [[ ! -f "$VIDEO_ATTRIBUTIONS_FILE" ]]; then
-    touch "$VIDEO_ATTRIBUTIONS_FILE" && chown -R "$user":"$user" "$VIDEO_ATTRIBUTIONS_FILE"
+    touch "$VIDEO_ATTRIBUTIONS_FILE"
   fi
   if [[ ! -f "$IMAGE_ATTRIBUTIONS_FILE" ]]; then
-    touch "$IMAGE_ATTRIBUTIONS_FILE" && chown -R "$user":"$user" "$IMAGE_ATTRIBUTIONS_FILE"
+    touch "$IMAGE_ATTRIBUTIONS_FILE"
   fi
 }
 
 
 function create_hash_files() {
   if [[ ! -f "$GODOT_VIDEO_HASHES_FILE" ]]; then
-    touch "$GODOT_VIDEO_HASHES_FILE" && chown -R "$user":"$user" "$GODOT_VIDEO_HASHES_FILE"
+    touch "$GODOT_VIDEO_HASHES_FILE"
   fi
   if [[ ! -f "$GODOT_IMAGE_HASHES_FILE" ]]; then
-    touch "$GODOT_IMAGE_HASHES_FILE" && chown -R "$user":"$user" "$GODOT_IMAGE_HASHES_FILE"
+    touch "$GODOT_IMAGE_HASHES_FILE"
   fi
 }
 
 
 function create_gamelist_file() {
   if [[ ! -f "$GODOT_GAMELIST_FILE" ]]; then
-    touch "$GODOT_GAMELIST_FILE" && chown -R "$user":"$user" "$GODOT_GAMELIST_FILE"
+    touch "$GODOT_GAMELIST_FILE"
     cat > "$GODOT_GAMELIST_FILE" << _EOF_
 <?xml version="1.0"?>
 <gameList>
