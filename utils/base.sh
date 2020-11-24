@@ -23,7 +23,7 @@ function is_retropie() {
 function check_dependencies() {
   local pkg
   for pkg in "${DEPENDENCIES[@]}"; do
-    if ! dpkg-query -W -f='${Status}' "$pkg" | awk '{print $3}' | grep -q "^installed$"; then
+    if ! dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | awk '{print $3}' | grep -q "^installed$"; then
       echo
       echo "WHOOPS! The '$pkg' package is not installed!"
       echo
@@ -34,21 +34,27 @@ function check_dependencies() {
         case "$option" in
           Yes)
             if ! which apt-get > /dev/null; then
-              echo "ERROR: Can't install '$pkg' automatically. Try to install it manually."
+              echo >&2
+              echo "ERROR: Can't install '$pkg' automatically. Try to install it manually." >&2
               exit 1
             else
               if sudo apt-get install "$pkg"; then
                 echo
                 echo "YIPPEE! The '$pkg' package installation was successful!"
+              else
+                echo
+                echo "ERROR: Something when wrong installing the '$pkg' package."
               fi
               break
             fi
             ;;
           No)
-            echo "ERROR: Can't launch the script if the '$pkg' package is not installed."
+            echo >&2
+            echo "ERROR: Can't launch the script if the '$pkg' package is not installed." >&2
             exit 1
             ;;
           *)
+            echo
             echo "Invalid option. Choose a number between 1 and ${#options[@]}."
             ;;
         esac
