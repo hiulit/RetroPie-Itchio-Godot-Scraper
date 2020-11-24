@@ -369,8 +369,8 @@ function update_game_info() {
 
 
 function add_game_info() {
-  # Check if the game already exists, either by checking the 'id' or the 'path'.
-  if xmlstarlet sel -t -v "/gameList/game[@id='$id']" "$GODOT_GAMELIST_FILE" > /dev/null || xmlstarlet sel -t -v "/gameList/game[path='$game_input']" "$GODOT_GAMELIST_FILE" > /dev/null; then
+  # Check if the game already exists by checking the 'path'.
+  if xmlstarlet sel -t -v "/gameList/game[path='./$input_game']" "$GODOT_GAMELIST_FILE" > /dev/null; then
     log "HEY! '$title' is already scraped."
     update_game_info
   else
