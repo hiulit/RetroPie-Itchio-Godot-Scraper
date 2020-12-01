@@ -1,4 +1,4 @@
-# RetroPie itch.io Godot Scraper
+# RetroPie itch.io Godot Scraper ![GitHub release (latest by date)](https://img.shields.io/github/v/release/hiulit/RetroPie-Itchio-Godot-Scraper)
 
 A tool for RetroPie to scrape Godot games hosted on https://itch.io/.
 
