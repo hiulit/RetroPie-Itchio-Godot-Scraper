@@ -35,7 +35,7 @@ You can install the script to be launched from:
 
 ## Usage
 
-If you installed in EmulationStation's RetroPie menu:
+If you installed the script in EmulationStation's RetroPie menu:
 
 * Enter EmulationStation.
 * Go to the RetroPie menu.
@@ -97,7 +97,7 @@ See [CHANGELOG](/CHANGELOG.md).
 
 ## Authors
 
-Me 😛 [@hiulit](https://github.com/hiulit).
+Me 😛  [@hiulit](https://github.com/hiulit).
 
 ## License
 
