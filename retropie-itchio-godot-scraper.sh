@@ -293,9 +293,9 @@ function get_game_info() {
     fi
   else
     log "ERROR: $CURL_STATUS!" >&2
-    echo >&2
+    log >&2
     log "$(cat "$CURL_RESPONSE")" >&2
-    exit 1
+    log
   fi
 }
 
