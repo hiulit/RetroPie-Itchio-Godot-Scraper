@@ -224,7 +224,7 @@ function get_game_info() {
   local video
 
   game_title="$1"
-  url="https://itchio-godot-scraper.now.sh/api/game/title/${game_title// /%20}" # Replace spaces with %20
+  url="https://itchio-godot-scraper.vercel.app/api/game/title/${game_title// /%20}" # Replace spaces with %20
 
   log "$(underline "URL: '$url'")"
   log "> Getting info for '$input_game' ..."
@@ -541,6 +541,7 @@ function scrape_all() {
     dialog_main
   fi
 }
+
 
 function delete_scrapings() {
   [[ -f "$GODOT_GAMELIST_FILE" ]] && rm "$GODOT_GAMELIST_FILE"
