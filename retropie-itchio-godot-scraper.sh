@@ -530,7 +530,6 @@ function scrape_all() {
   log "Scraping done!"
   log
 
-
   if [[ "$GUI_FLAG" -eq 1 ]]; then
     local text
     local dialog_height="9"

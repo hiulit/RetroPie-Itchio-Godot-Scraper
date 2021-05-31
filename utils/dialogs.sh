@@ -171,15 +171,28 @@ function dialog_main() {
           dialog_choose_games
           ;;
         2)
-          scrape_all
+          dialog_yesno "Info!" "Depending on the size of the game library, scraping all the games might the a while.\n\nWould you like to continue anyway?"
+          local return_value="$?"
+
+          if [[ "$return_value" -eq "$DIALOG_OK" ]]; then
+            scrape_all
+          fi
+
+          dialog_main
           ;;
         3)
-          delete_scrapings
+          dialog_yesno "Info!" "Are you sure you want to delete all the scrapings?"
+          local return_value="$?"
 
-          if [[ "$return_value" -eq 0 ]]; then
-            dialog_msgbox "Info" "All scraping were deleted successfully!"
-          else
-            dialog_msgbox "Error!" "Something when wrong when deleting the scraping."
+          if [[ "$return_value" -eq "$DIALOG_OK" ]]; then
+            delete_scrapings
+            local return_value="$?"
+
+            if [[ "$return_value" -eq 0 ]]; then
+              dialog_msgbox "Info" "All scrapings were deleted successfully!"
+            else
+              dialog_msgbox "Error!" "Something when wrong when deleting the scrapings."
+            fi
           fi
 
           dialog_main
