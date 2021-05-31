@@ -29,6 +29,7 @@ readonly SCRIPT_NAME="$(basename "$0")"
 readonly SCRIPT_FULL="$SCRIPT_DIR/$SCRIPT_NAME"
 readonly SCRIPT_TITLE="RetroPie itch.io Godot Scraper"
 readonly SCRIPT_DESCRIPTION="Scrape Godot games hosted on https://itch.io/."
+readonly SCRIPT_IMAGE="$SCRIPT_DIR/retropie-itchio-godot-scraper.png"
 
 readonly RP_DIR="$home/RetroPie"
 readonly RP_SETUP_DIR="$home/RetroPie-Setup"
@@ -50,6 +51,7 @@ RP_MENU_PROPERTIES=(
   "path ./$MAIN_SCRIPT_FILE"
   "name itch.io Godot Scraper"
   "desc $SCRIPT_DESCRIPTION"
+  "image $SCRIPT_IMAGE"
 )
 
 
