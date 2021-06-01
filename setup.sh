@@ -23,7 +23,7 @@ user="$SUDO_USER"
 home="$(find /home -type d -name RetroPie -print -quit 2> /dev/null)"
 home="${home%/RetroPie}"
 
-readonly SCRIPT_VERSION="1.0.0"
+readonly SCRIPT_VERSION="1.2.0"
 readonly SCRIPT_DIR="$(cd "$(dirname $0)" && pwd)"
 readonly SCRIPT_NAME="$(basename "$0")"
 readonly SCRIPT_FULL="$SCRIPT_DIR/$SCRIPT_NAME"
@@ -68,7 +68,70 @@ source "$SCRIPT_DIR/utils/dialogs.sh"
 
 # Functions ##################################################################
 
+function usage() {
+    echo
+    echo "USAGE: $0 [OPTIONS]"
+    echo
+    echo "Use '$0 --help' to see all the options."
+    echo
+}
+
+
+function check_argument() {
+    # This method doesn't accept arguments starting with '-'.
+    if [[ -z "$2" || "$2" =~ ^- ]]; then
+        echo >&2
+        echo "ERROR: '$1' is missing an argument." >&2
+        echo >&2
+        echo "Try '$0 --help' for more info." >&2
+        echo "Or read the documentation in the README." >&2
+        echo >&2
+        return 1
+    fi
+}
+
+
+function install() {
+  case "$1" in
+    "retropie-menu")
+      install_script_retropie_menu
+    ;;
+    "scriptmodule")
+      install_scriptmodule
+    ;;
+    *)
+      echo >&2
+      echo "ERROR: Invalid option '$1'." >&2
+      echo >&2
+      exit 2
+    ;;
+  esac
+}
+
+
+function uninstall() {
+  case "$1" in
+    "retropie-menu")
+      uninstall_script_retropie_menu
+    ;;
+    "scriptmodule")
+      uninstall_scriptmodule
+    ;;
+    *)
+      echo >&2
+      echo "ERROR: Invalid option '$1'." >&2
+      echo >&2
+      exit 2
+    ;;
+  esac
+}
+
+
 function install_script_retropie_menu() {
+  if [[ "$GUI_FLAG" -eq 0 ]]; then
+    echo
+    echo "> Installing script in EmulationStation's RetroPie menu ..."
+  fi
   cat > "$RP_MENU_DIR/$MAIN_SCRIPT_FILE" << _EOF_
 #!/usr/bin/env bash
 # $MAIN_SCRIPT_FILE
@@ -103,6 +166,10 @@ _EOF_
 
 
 function uninstall_script_retropie_menu() {
+  if [[ "$GUI_FLAG" -eq 0 ]]; then
+    echo
+    echo "> Uninstalling script in EmulationStation's RetroPie menu ..."
+  fi
   rm "$RP_MENU_DIR/$MAIN_SCRIPT_FILE"
   xmlstarlet ed -L -d "//gameList/game[path='./$MAIN_SCRIPT_FILE']" "$RP_MENU_GAMELIST"
   if [[ "$GUI_FLAG" -eq 1 ]]; then
@@ -115,13 +182,15 @@ function uninstall_script_retropie_menu() {
 
 
 function install_scriptmodule() {
-  echo
-  echo "> Installing '$(basename "$SCRIPTMODULE_FILE")' scriptmodule ..."
+  if [[ "$GUI_FLAG" -eq 0 ]]; then
+    echo
+    echo "> Installing '$(basename "$SCRIPTMODULE_FILE")' scriptmodule ..."
+  fi
   cp "$SCRIPTMODULE_FILE" "$SCRIPTMODULES_DIR"
   local return_value="$?"
   if [[ "$return_value" -eq 0 ]]; then
     if [[ "$GUI_FLAG" -eq 1 ]]; then
-      dialog_msgbox "Success!" "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule installed in '$SCRIPTMODULES_DIR' successfully!"
+      dialog_msgbox "Success!" "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule installed successfully!"
       local info_text=""
       info_text+="Installation\n"
       info_text+="------------\n"
@@ -135,7 +204,7 @@ function install_scriptmodule() {
       dialog_msgbox "Info" "$info_text" 16
       dialog_setup
     else
-      echo "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule installed in '$SCRIPTMODULES_DIR' successfully!"
+      echo "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule installed successfully!"
     fi
   else
     if [[ "$GUI_FLAG" -eq 1 ]]; then
@@ -149,16 +218,18 @@ function install_scriptmodule() {
 
 
 function uninstall_scriptmodule() {
-  echo
-  echo "> Uninstalling '$(basename "$SCRIPTMODULE_FILE")' scriptmodule ..."
+  if [[ "$GUI_FLAG" -eq 0 ]]; then
+    echo
+    echo "> Uninstalling '$(basename "$SCRIPTMODULE_FILE")' scriptmodule ..."
+  fi
   rm "$SCRIPTMODULES_DIR/$(basename "$SCRIPTMODULE_FILE")"
   local return_value="$?"
   if [[ "$return_value" -eq 0 ]]; then
     if [[ "$GUI_FLAG" -eq 1 ]]; then
-      dialog_msgbox "Success!" "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule uninstalled from '$SCRIPTMODULES_DIR' successfully!"
+      dialog_msgbox "Success!" "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule uninstalled successfully!"
       dialog_setup
     else
-      echo "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule uninstalled from '$SCRIPTMODULES_DIR' successfully!"
+      echo "'$(basename "$SCRIPTMODULE_FILE")' scriptmodule uninstalled successfully!"
     fi
   else
     if [[ "$GUI_FLAG" -eq 1 ]]; then
@@ -170,9 +241,67 @@ function uninstall_scriptmodule() {
   fi
 }
 
-function main() {
-  GUI_FLAG=1
-  dialog_setup
+
+function get_options() {
+  if [[ -z "$1" ]]; then
+    usage
+    exit 0
+  else
+    case "$1" in
+#H -h, --help                 Prints the help message.
+      -h|--help)
+        echo
+        echo "$SCRIPT_TITLE"
+        for ((i=1; i<="${#SCRIPT_TITLE}"; i+=1)); do [[ -n "$dashes" ]] && dashes+="-" || dashes="-"; done && echo "$dashes"
+        echo "$SCRIPT_DESCRIPTION"
+        echo
+        echo "USAGE: $0 [OPTIONS]"
+        echo
+        echo "OPTIONS:"
+        echo
+        sed '/^#H /!d; s/^#H //' "$0"
+        echo
+        exit 0
+        ;;
+#H -v, --version              Prints the script version.
+      -v|--version)
+        echo "$SCRIPT_VERSION"
+        ;;
+#H -i, --install [script]     Installs the given script.
+#H                              Scripts: "retropie-menu" "scriptmodule"
+      -i|--install)
+        check_argument "$1" "$2" || exit 1
+        shift
+        install "$1"
+        ;;
+#H -u, --uninstall [script]   Uninstalls the given script.
+#H                              Scripts: "retropie-menu" "scriptmodule"
+      -u|--uninstall)
+        check_argument "$1" "$2" || exit 1
+        shift
+        uninstall "$1"
+        ;;
+      *)
+        echo >&2
+        echo "ERROR: Invalid option '$1'." >&2
+        exit 2
+        ;;
+    esac
+  fi
 }
+
+
+function main() {
+  if [[ -z "$@" ]]; then
+    GUI_FLAG=1
+  fi
+
+  if [[ "$GUI_FLAG" -eq 1 ]]; then
+    dialog_setup
+  else
+    get_options "$@"
+  fi
+}
+
 
 main "$@"

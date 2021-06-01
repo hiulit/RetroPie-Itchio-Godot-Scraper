@@ -28,48 +28,26 @@ git pull
 
 ## 🛠️ Setup
 
+You can install the script to be launched from:
+
+- EmulationStation's RetroPie menu
+- RetroPie Setup
+
+You can use the GUI:
+
 ```
 ./setup.sh
 ```
-You can install the script to be launched from:
 
-* EmulationStation's RetroPie menu
-* RetroPie Setup
+![Setup](examples/setup.png)
 
-![Setup](examples/setup.jpg)
+Or you can use the command line:
+
+```
+./setup.sh {--install | --uninstall} {retropie-menu | scriptmodule}
+```
 
 ## 🚀 Usage
-
-If you installed the script in EmulationStation's RetroPie menu:
-
-* Enter EmulationStation.
-* Go to the RetroPie menu.
-* Select **itch.io Godot Scraper** to launch the script.
-
-![EmulationStation Retropie Menu](examples/emulationstation-retropie-menu.png)
-
-
-If you installed the scriptmodule, first you have to set it up:
-
-* Run `sudo /home/pi/RetroPie-Setup/retropie_setup.sh`.
-* Select **Manage packages**.
-* Select **Manage optional packages**.
-* Select **itchio-godot-scraper**.
-* Select **Install from source**.
-
-Now:
-
-* Run `sudo /home/pi/RetroPie-Setup/retropie_setup.sh`.
-* Select **Configuration / tools**.
-* Select **itchio-godot-scraper** to launch the script.
-
-In both cases you'll end up with a simple dialog, where you can:
-
-* Select games to scrape.
-* Scrape all games.
-
-![Scrape games menu](examples/scrape-games-menu.jpg)
-![Select games to scrape](examples/select-games-to-scrape.jpg)
 
 If you don't want to install the script, you can just run it from the downloaded folder.
 
@@ -78,13 +56,56 @@ cd /home/pi/RetroPie-Itchio-Godot-Scraper/
 ./retropie-itchio-godot-scraper.sh
 ```
 
+### EmulationStation's RetroPie menu
+
+If you installed the script in EmulationStation's RetroPie menu:
+
+- Enter EmulationStation.
+- Go to the RetroPie menu.
+- Select **itch.io Godot Scraper** to launch the script.
+
+![EmulationStation Retropie Menu](examples/emulationstation-retropie-menu.png)
+
+### RetroPie Setup
+
+If you installed the scriptmodule, first you have to set it up:
+
+- Run `sudo /home/pi/RetroPie-Setup/retropie_setup.sh`.
+- Select **Manage packages**.
+- Select **Manage optional packages**.
+- Select **itchio-godot-scraper**.
+- Select **Install from source**.
+
+Now:
+
+- Run `sudo /home/pi/RetroPie-Setup/retropie_setup.sh`.
+- Select **Configuration / tools**.
+- Select **itchio-godot-scraper** to launch the script.
+
+### Dialog examples
+
+In both cases you'll end up with a simple dialog, where you can:
+
+- Select games to scrape.
+- Scrape all games.
+- Delete scrapings.
+
+![Scrape games menu](examples/scrape-games-menu.png)
+![Select games to scrape](examples/select-games-to-scrape.png)
+
+## Scraping view example
+
+This is how the default EmulationStation theme will look after the scraping.
+
+![Scraping view](examples/scraping-view.png)
+
 ## ℹ️ Troubleshooting
 
 ### The scraper can't find a game
 
 Most likely it's because the developer didn't *properly\** name the game build, but maybe it's because the scrapper does a bad job at finding the games.
 
-See the [itchio-godot-scraper](https://github.com/hiulit/itchio-godot-scraper) project (which is the API where this scraper takes the data from) to better understand how the scraper works and maybe tell the developer to rename the game so it's scrapable by this script. Or even better, contribute to make it better 😉.
+See the [itch.io Godot Scraper](https://github.com/hiulit/itchio-godot-scraper) project (which is the API where this scraper takes the data from) to better understand how the scraper works and maybe tell the developer to rename the game so it's scrapable by this script. Or even better, contribute to make it better 😉.
 
 *\* It's actually not their fault, but the scraper needs a game to be named in some kind of convention to be able to scrape it.*
 
@@ -92,9 +113,9 @@ See the [itchio-godot-scraper](https://github.com/hiulit/itchio-godot-scraper) p
 
 This scraper takes all the data from https://itch.io/ and some games have assets (images/videos) that are licensed under various licenses. So, to be as fair as posible, the script adds some files linking to the game's source webpage. These can be located at:
 
-* `~/RetroPie/roms/godot-engine`
-* `~/RetroPie/roms/godot-engine/images`
-* `~/RetroPie/roms/godot-engine/videos`
+* `~/RetroPie/roms/godot-engine/000_GAME_ATTRIBUTIONS_000.txt`
+* `~/RetroPie/roms/godot-engine/images/000_IMAGE_ATTRIBUTIONS_000.txt`
+* `~/RetroPie/roms/godot-engine/videos/000_VIDEO_ATTRIBUTIONS_000.txt`
 
 ## Changelog
 

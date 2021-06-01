@@ -4,6 +4,13 @@
 
 * Up to date
 
+## [1.2.0] - 2021-06-01
+
+### Added
+
+- New option to install/uninstall the scripts via the command line. No need for the GUI.
+  - `./setup.sh {--install | --uninstall} {retropie-menu | scriptmodule}`
+
 ## [1.1.0] - 2021-05-31
 
 ### Added
