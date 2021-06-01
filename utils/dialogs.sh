@@ -171,7 +171,7 @@ function dialog_main() {
           dialog_choose_games
           ;;
         2)
-          dialog_yesno "Info!" "Depending on the size of the game library, scraping all the games might the a while.\n\nWould you like to continue anyway?"
+          dialog_yesno "Warning!" "Depending on the size of the game library, scraping all the games might the a while.\n\nWould you like to continue anyway?"
           local return_value="$?"
 
           if [[ "$return_value" -eq "$DIALOG_OK" ]]; then
@@ -181,7 +181,7 @@ function dialog_main() {
           dialog_main
           ;;
         3)
-          dialog_yesno "Info!" "Are you sure you want to delete all the scrapings?"
+          dialog_yesno "Warning!" "Are you sure you want to delete all the scrapings?"
           local return_value="$?"
 
           if [[ "$return_value" -eq "$DIALOG_OK" ]]; then
