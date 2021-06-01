@@ -23,7 +23,7 @@ user="$SUDO_USER"
 home="$(find /home -type d -name RetroPie -print -quit 2> /dev/null)"
 home="${home%/RetroPie}"
 
-readonly SCRIPT_VERSION="1.0.0"
+readonly SCRIPT_VERSION="1.2.0"
 readonly SCRIPT_DIR="$(cd "$(dirname $0)" && pwd)"
 readonly SCRIPT_NAME="$(basename "$0")"
 readonly SCRIPT_FULL="$SCRIPT_DIR/$SCRIPT_NAME"
