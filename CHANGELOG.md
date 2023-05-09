@@ -4,6 +4,12 @@
 
 * Up to date
 
+## [1.2.1] - 2023-05-09
+
+### Fixed
+
+- Force remove game list and attribution files.
+
 ## [1.2.0] - 2021-06-01
 
 ### Added
