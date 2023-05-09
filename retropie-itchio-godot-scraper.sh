@@ -543,8 +543,8 @@ function scrape_all() {
 
 
 function delete_scrapings() {
-  [[ -f "$GODOT_GAMELIST_FILE" ]] && rm "$GODOT_GAMELIST_FILE"
-  [[ -f "$GAMES_ATTRIBUTIONS_FILE" ]] && rm "$GAMES_ATTRIBUTIONS_FILE"
+  [[ -f "$GODOT_GAMELIST_FILE" ]] && rm -f "$GODOT_GAMELIST_FILE"
+  [[ -f "$GAMES_ATTRIBUTIONS_FILE" ]] && rm -f "$GAMES_ATTRIBUTIONS_FILE"
 
   [[ -d "$GODOT_VIDEOS_DIR" ]] && rm -rf "$GODOT_VIDEOS_DIR"
   [[ -d "$GODOT_IMAGES_DIR" ]] && rm -rf "$GODOT_IMAGES_DIR"
